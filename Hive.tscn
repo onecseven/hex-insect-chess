@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://bo78tmpm2j7m2"]
+
+[ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="1_2md7f"]
+[ext_resource type="Script" path="res://Nodes/BoardNode.cs" id="2_5gm5w"]
+[ext_resource type="Script" path="res://PotentialMoves.cs" id="3_p4sjr"]
+[ext_resource type="PackedScene" uid="uid://pu8oamm6lk8b" path="res://hover.tscn" id="3_ra64y"]
+[ext_resource type="Script" path="res://Nodes/Machine.cs" id="5_1ousa"]
+[ext_resource type="PackedScene" uid="uid://dlnigsf4i8sb3" path="res://MoveSender.tscn" id="7_soia2"]
+
+[node name="Hive" type="Node2D"]
+
+[node name="TatiHex" parent="." instance=ExtResource("1_2md7f")]
+position = Vector2(284, 53)
+Hexsize = 80
+Rows = 13
+Cols = 13
+orientation = 0
+ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
+
+[node name="Game" type="Node" parent="."]
+
+[node name="BoardNode" type="Node2D" parent="Game" node_paths=PackedStringArray("grid")]
+script = ExtResource("2_5gm5w")
+grid = NodePath("../../TatiHex")
+
+[node name="Machine" type="Node" parent="Game" node_paths=PackedStringArray("board")]
+script = ExtResource("5_1ousa")
+board = NodePath("../BoardNode")
+
+[node name="Hover" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("3_ra64y")]
+grid = NodePath("../TatiHex")
+
+[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board")]
+script = ExtResource("3_p4sjr")
+grid = NodePath("../TatiHex")
+board = NodePath("../Game/BoardNode")
+ColorBase = Color(1, 0, 0.0745098, 1)
+
+[node name="MoveSender" parent="." node_paths=PackedStringArray("machine") instance=ExtResource("7_soia2")]
+machine = NodePath("../Game/Machine")

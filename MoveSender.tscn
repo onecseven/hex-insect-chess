@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://dlnigsf4i8sb3"]
+
+[ext_resource type="Script" path="res://Nodes/DebugSendMoveControl/MoveSender.cs" id="1_4kxby"]
+
+[node name="MoveSender" type="VFlowContainer"]
+anchors_preset = -1
+anchor_bottom = 0.025
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 100.0
+offset_bottom = 334.5
+scale = Vector2(1.0371, 1)
+script = ExtResource("1_4kxby")
+
+[node name="MoveTypeOption" type="OptionButton" parent="."]
+layout_mode = 2
+
+[node name="PlayerOption" type="OptionButton" parent="."]
+layout_mode = 2
+allow_reselect = true
+
+[node name="PieceOption" type="OptionButton" parent="."]
+layout_mode = 2
+
+[node name="destination" type="HFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="destination" type="Label" parent="destination"]
+layout_mode = 2
+text = "destination
+"
+
+[node name="x" type="SpinBox" parent="destination"]
+layout_mode = 2
+min_value = -100.0
+
+[node name="y" type="SpinBox" parent="destination"]
+layout_mode = 2
+min_value = -100.0
+
+[node name="origin" type="HFlowContainer" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="label" type="Label" parent="origin"]
+layout_mode = 2
+text = "origin          "
+
+[node name="x" type="SpinBox" parent="origin"]
+layout_mode = 2
+min_value = -100.0
+
+[node name="y" type="SpinBox" parent="origin"]
+layout_mode = 2
+min_value = -100.0
+
+[node name="send" type="Button" parent="."]
+layout_mode = 2
+text = "send"
+
+[connection signal="item_selected" from="MoveTypeOption" to="." method="_on_move_type_option_item_selected"]

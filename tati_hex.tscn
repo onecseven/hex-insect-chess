@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3rc8wnxfmlhk"]
+
+[ext_resource type="Script" path="res://Nodes/TatiHex.cs" id="1_qykj4"]
+
+[node name="TatiHex" type="Node2D"]
+script = ExtResource("1_qykj4")
+Hexsize = 150
+orientation = 1
+ColorBase = Color(0.623529, 0.34902, 1, 1)
