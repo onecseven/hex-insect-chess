@@ -29,11 +29,12 @@ public class HiveUtils
         }
         GD.Print("===");
     }
-    public static (int, int, int)[] directions = new (int, int, int)[6] {
-            (+1, 0, -1), (+1, -1, 0), (0, -1, +1),
-            (-1, 0, +1), (-1, +1, 0), (0, +1, -1),
+
+    public static Cell[] directions = new Cell[6] {
+            new Cell(+1, 0, -1), new Cell(+1, -1, 0), new Cell(0, -1, +1),
+            new Cell(-1, 0, +1), new Cell(-1, +1, 0), new Cell(0, +1, -1),
         };
-    public static List<Cell> getNeighbors(Cell cell) => directions.Select(direction => new Cell(cell.x + direction.Item1, cell.y + direction.Item2, cell.z + direction.Item3)).ToList();
+    public static List<Cell> getNeighbors(Cell cell) => directions.Select(direction => new Cell(cell.x + direction.x, cell.y + direction.y, cell.z + direction.z)).ToList();
     public static Vector2 Vector3ToVector2 (Vector3 vector) => new Vector2(vector.X, vector.Y);
 
     }
