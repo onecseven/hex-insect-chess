@@ -98,19 +98,17 @@ public partial class MoveSender : VFlowContainer
     public void buildMove()
     {
         if (machine == null) return;
-        GD.Print(selectedPlayers);
-        GD.Print(selectedPiece);
-        GD.Print(selectedMoveType);
-        GD.Print(destination);
-        GD.Print(origin);
+        //GD.Print(selectedPlayers);
+        //GD.Print(selectedPiece);
+        //GD.Print(selectedMoveType);
+        //GD.Print(destination);
+        //GD.Print(origin);
         switch (selectedMoveType)
         {
             case Hive.MoveType.INITIAL_PLACE:
                 machine.send_move(new INITIAL_PLACE(selectedPlayers, selectedPiece, destination));
                 break;
             case Hive.MoveType.PLACE:
-                GD.Print("Tati in palce piece");
-
                 machine.send_move(new PLACE(selectedPlayers, selectedPiece, destination));
                 break;
             case Hive.MoveType.MOVE_PIECE:

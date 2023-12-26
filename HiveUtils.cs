@@ -20,6 +20,15 @@ public class HiveUtils
             GD.Print(name, value);
             }
     }
+    public static void Unroll<T>(string title, IEnumerable<T> obj)
+    {
+        GD.Print(title);
+        foreach (T item in obj)
+        {
+            GD.Print(item);
+        }
+        GD.Print("===");
+    }
     public static (int, int, int)[] directions = new (int, int, int)[6] {
             (+1, 0, -1), (+1, -1, 0), (0, -1, +1),
             (-1, 0, +1), (-1, +1, 0), (0, +1, -1),
