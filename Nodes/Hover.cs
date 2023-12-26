@@ -47,7 +47,7 @@ public partial class Hover : Node2D
 		if (grid.hexes.ContainsKey(hoveringCell))
 		{
             Vector3 center = grid.hexes[hoveringCell];
-            GD.Print("hover draw ", center);
+            //GD.Print("hover draw ", center);
 			var super_shapes = grid.GetHexCornersFromCenter(new Vector2(center.X, center.Y));
 			for (int i = 0; i < super_shapes.Length; i++)
 			{
