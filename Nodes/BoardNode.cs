@@ -56,7 +56,6 @@ public partial class BoardNode : Node2D
     public List<Cell> getEmptyNeighbors(Cell cell) => getNeighbors(cell).Where(x => !tileIsOccupied(x)).ToList();
     public List<Cell> getOccupiedNeighbors(Cell cell) => getNeighbors(cell).Where(x => tileIsOccupied(x)).ToList();
     public bool tileIsOccupied(Cell cell) => piecesInPlay.ContainsKey(cell);
-    //public List<Cell> getNeighbors(Sylves.Cell origin) => HiveUtils.getNeighbors(origin);
     public List<Cell> getNeighbors(Sylves.Cell origin) => grid.grid.GetNeighbours(origin).ToList();
     public bool AreCellsAdjacent(Cell a, Cell B) => HiveUtils.getNeighbors(a).Contains(B);
     public List<Cell> adjacentLegalCells(Cell cell)
