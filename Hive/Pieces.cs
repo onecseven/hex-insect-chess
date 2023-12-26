@@ -63,21 +63,16 @@ namespace Hive
                     return Bee._getLegalMoves(board, piece.location);
                 case Pieces.SPIDER:
                     return Spider._getLegalMoves(board, piece.location);
-                    throw new NotImplementedException();
                 case Pieces.BEETLE:
                     return Beetle._getLegalMoves(board, piece.location);
+                case Pieces.LADYBUG:
+                    return Ladybug._getLegalMoves(board, piece.location);
+                case Pieces.GRASSHOPPER:
+                    return Grasshopper._getLegalMoves(board, piece.location);
+                case Pieces.MOSQUITO:
+                    return Mosquito._getLegalMoves(board, piece.location);
                 case Pieces.ANT:
                     throw new NotImplementedException();
-                    break;
-                case Pieces.GRASSHOPPER:
-                    throw new NotImplementedException();
-                    break;
-                case Pieces.MOSQUITO:
-                    throw new NotImplementedException();
-                    break;
-                case Pieces.LADYBUG:
-                    throw new NotImplementedException();
-                    break;
                 default:
                     throw new NotImplementedException();
                     break;
@@ -92,10 +87,40 @@ namespace Hive
     }
     public class Mosquito : Piece
     {
+        bool beetleMode = false;
+        Piece blockedPiece = null;
+
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin) {
+            List<Cell> result = new List<Cell>();
+           
+            return result;
+        }
+
         public Mosquito(Players p, Cell l) : base(Pieces.MOSQUITO, p, l) { }
     }
     public class Ladybug : Piece
     {
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        {
+            List<Cell> pathOrigins = board.getOccupiedNeighbors(origin);
+            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> paths = new();
+            List<Cell> endpoints = new();
+            foreach (Cell firstStep in pathOrigins)
+            {
+
+                List<Cell> secondStep = board.getOccupiedNeighbors(firstStep);
+                secondStep.Remove(origin);
+
+                foreach (Cell seStep in secondStep)
+                {
+                    List<Cell> lastStep = board.getEmptyNeighbors(seStep);
+                    lastStep.ForEach(last => paths.Add((firstStep, seStep, last)));
+                    lastStep.ForEach(endpoints.Add);
+                }
+            }
+            HiveUtils.Unroll("Path", paths);
+            return endpoints;
+        }
         public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l) { }
     }
     public class Beetle : Piece
@@ -138,6 +163,37 @@ namespace Hive
     }
     public class Grasshopper : Piece
     {
+        private static Cell traverseDirection(Cell startPoint, Cell direction, BoardNode board)
+        {
+            List<Cell> result = new List<Cell>() { startPoint };
+            Cell current = startPoint;
+            bool toContinue = true;
+            while (toContinue == true)
+            {
+                var newOne = new Cell(current.x + direction.x, current.y + direction.y, current.z + direction.z);
+                if (board.tileIsOccupied(newOne))
+                {
+                    current = newOne;
+                    result.Add(newOne);
+                    continue;
+                }
+                else
+                {
+                    return newOne;
+                }
+            }
+            throw new Exception("huh");
+        }
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        {
+            List<Cell> result = new List<Cell> ();
+            foreach (Cell direction in HiveUtils.directions)
+            {
+                Cell current = new Cell(origin.x + direction.x, origin.y + direction.y, origin.z + direction.z);
+                if (board.tileIsOccupied(current)) result.Add(traverseDirection(current, direction, board));
+            }
+            return result;
+        }
         public Grasshopper(Players p, Cell l) : base(Pieces.GRASSHOPPER, p, l) { }
     }
     public class Ant : Piece
