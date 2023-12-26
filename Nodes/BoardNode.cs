@@ -21,6 +21,10 @@ public partial class BoardNode : Node2D
         [new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4, 5, -9)),
         [new Cell(5, 6, -11)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 6, -11)),
         [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
+        [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
+        [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
+
+
     };
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
@@ -54,7 +58,6 @@ public partial class BoardNode : Node2D
     public bool tileIsOccupied(Cell cell) => piecesInPlay.ContainsKey(cell);
     //public List<Cell> getNeighbors(Sylves.Cell origin) => HiveUtils.getNeighbors(origin);
     public List<Cell> getNeighbors(Sylves.Cell origin) => grid.grid.GetNeighbours(origin).ToList();
-
     public bool AreCellsAdjacent(Cell a, Cell B) => HiveUtils.getNeighbors(a).Contains(B);
     public List<Cell> adjacentLegalCells(Cell cell)
     {
@@ -69,7 +72,6 @@ public partial class BoardNode : Node2D
         var prelim = empty.Intersect(neighbor_adjacent).ToList();
         return prelim.ToList();
     }
-
     public List<Cell> hypotheticalAdjacentLegalCells(Cell cell, Cell exclude)
     {
         List<Cell> empty = getEmptyNeighbors(cell);
