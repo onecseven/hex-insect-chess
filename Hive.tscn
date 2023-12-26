@@ -10,7 +10,6 @@
 [node name="Hive" type="Node2D"]
 
 [node name="TatiHex" parent="." instance=ExtResource("1_2md7f")]
-visible = false
 position = Vector2(284, 53)
 Hexsize = 80
 Rows = 13
