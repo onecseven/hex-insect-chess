@@ -92,7 +92,15 @@ namespace Hive
 
         public static List<Cell> _getLegalMoves(BoardNode board, Cell origin) {
             List<Cell> result = new List<Cell>();
-           
+            Piece originalPiece = board.piecesInPlay[origin];
+            List<Cell> occupied_guys = board.getOccupiedNeighbors(origin);
+            foreach (Cell occupied in occupied_guys)
+            {
+                Pieces current_type = board.piecesInPlay[occupied].type;
+                if (current_type == Pieces.MOSQUITO) continue;
+                List<Cell> convertedMoves = Piece.getLegalMoves(new Piece(current_type, originalPiece.owner, origin), board);
+                result.AddRange(convertedMoves);
+            }
             return result;
         }
 
