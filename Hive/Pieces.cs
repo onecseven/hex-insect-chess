@@ -1,4 +1,4 @@
-using Godot;
+ using Godot;
 using Godot.Collections;
 using Sylves;
 using System.Linq;
@@ -56,26 +56,23 @@ namespace Hive
         }
         public static List<Cell> getLegalMoves(Piece piece, BoardNode board)
         {
-            GD.Print(piece.location);
+            //GD.Print(piece.location);
             switch (piece.type)
             {
                 case Pieces.BEE:
                     return Bee._getLegalMoves(board, piece.location);
+                case Pieces.SPIDER:
+                    return Spider._getLegalMoves(board, piece.location);
+                    throw new NotImplementedException();
+                case Pieces.BEETLE:
+                    return Beetle._getLegalMoves(board, piece.location);
                 case Pieces.ANT:
                     throw new NotImplementedException();
                     break;
-                case Pieces.SPIDER:
-                    throw new NotImplementedException();
-
-                    break;
                 case Pieces.GRASSHOPPER:
                     throw new NotImplementedException();
-
                     break;
                 case Pieces.MOSQUITO:
-                    throw new NotImplementedException();
-                    break;
-                case Pieces.BEETLE:
                     throw new NotImplementedException();
                     break;
                 case Pieces.LADYBUG:
@@ -91,50 +88,51 @@ namespace Hive
     public class Bee : Piece
     {
         public Bee(Players p, Cell l) : base(Pieces.BEE, p, l) { }
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
-        {
-            List<Cell> spaces = board.getNeighbors(origin);
-            List<Cell> neighbors = board.getOccupiedNeighbors(origin);
-            List<Cell> legalSpace = new List<Cell>();
-            foreach (Cell neighbor in neighbors)
-            {
-                //adds to legal scaces every cell that shows up both in spaces list and in the empty tiles surrounding __origin__
-                legalSpace.AddRange(spaces.Intersect(board.getEmptyNeighbors(neighbor)));
-            }
-            return spaces;
-        }
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin) => board.adjacentLegalCells(origin);
     }
     public class Mosquito : Piece
     {
         public Mosquito(Players p, Cell l) : base(Pieces.MOSQUITO, p, l) { }
     }
     public class Ladybug : Piece
-    {      
+    {
         public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l) { }
     }
     public class Beetle : Piece
     {
         Piece blockedPiece = null;
-        public Beetle(Players p, Cell l) : base(Pieces.BEETLE, p, l) { }
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        {
+            List<Cell> result = new List<Cell>();
+            result.AddRange(board.adjacentLegalCells(origin));
+            result.AddRange(board.getOccupiedNeighbors(origin));
+            return result;
+        }
+        public Beetle(Players p, Cell l) : base(Pieces.BEETLE, p, l) { }  
     }
     public class Spider : Piece
     {
         public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
         {
             List<Cell> pathOrigins = board.adjacentLegalCells(origin);
-            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> results = new();
+            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> paths = new();
+            List<Cell> endpoints = new();
             foreach (Cell firstStep in pathOrigins)
             {
-                List<Cell> secondStep = board.adjacentLegalCells(firstStep);
+
+                List<Cell> secondStep = board.hypotheticalAdjacentLegalCells(firstStep, origin);
                 secondStep.Remove(origin);
+
                 foreach (Cell seStep in secondStep)
                 {
-                    List<Cell> lastStep = board.adjacentLegalCells(seStep);
+                    List<Cell> lastStep = board.hypotheticalAdjacentLegalCells(seStep, origin);
                     lastStep.Remove(firstStep);
-                    lastStep.ForEach(last => results.Add((firstStep, seStep, last)));
+                    lastStep.ForEach(last => paths.Add((firstStep, seStep, last)));
+                    lastStep.ForEach(endpoints.Add);
                 }
             }
-            return results.ToList();
+            HiveUtils.Unroll("Path", paths);
+            return endpoints;
         }
         public Spider(Players p, Cell l) : base(Pieces.SPIDER, p, l) { }
     }

@@ -7,11 +7,21 @@ using System.Linq;
 
 public partial class BoardNode : Node2D
 {
+    private readonly Cell nullCell = new Cell(-12, -12, -12);
     [Export]
     public TatiHex grid = null;
     private Player whitePlayer = new Player(Players.WHITE);
     private Player blackPlayer = new Player(Players.BLACK);
-    public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() { [new Cell(0, 0, 0)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(0, 0)) };
+    public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() {
+        [new Cell(0, 0, 0)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(0, 0)),
+        [new Cell(5, 4, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 4,-9)),
+        [new Cell(5 ,5, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 5, -10)),
+        [new Cell(6, 4, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(6, 4, -10)),
+        [new Cell(4, 6, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4, 6, -10)),
+        [new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4, 5, -9)),
+        [new Cell(5, 6, -11)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 6, -11)),
+        [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
+    };
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
     {
@@ -39,10 +49,13 @@ public partial class BoardNode : Node2D
             //draw texture 
         }
 	}
-    public List<Cell> getEmptyNeighbors(Cell cell) => getNeighbors(cell).Where(x => tileIsOccupied(x)).ToList();
-    public List<Cell> getOccupiedNeighbors(Cell cell) => getNeighbors(cell).Where(x => !tileIsOccupied(x)).ToList();
+    public List<Cell> getEmptyNeighbors(Cell cell) => getNeighbors(cell).Where(x => !tileIsOccupied(x)).ToList();
+    public List<Cell> getOccupiedNeighbors(Cell cell) => getNeighbors(cell).Where(x => tileIsOccupied(x)).ToList();
     public bool tileIsOccupied(Cell cell) => piecesInPlay.ContainsKey(cell);
-    public List<Cell> getNeighbors(Sylves.Cell origin) => HiveUtils.getNeighbors(origin);
+    //public List<Cell> getNeighbors(Sylves.Cell origin) => HiveUtils.getNeighbors(origin);
+    public List<Cell> getNeighbors(Sylves.Cell origin) => grid.grid.GetNeighbours(origin).ToList();
+
+    public bool AreCellsAdjacent(Cell a, Cell B) => HiveUtils.getNeighbors(a).Contains(B);
     public List<Cell> adjacentLegalCells(Cell cell)
     {
         List<Cell> empty = getEmptyNeighbors(cell);
@@ -50,9 +63,25 @@ public partial class BoardNode : Node2D
         HashSet<Cell> neighbor_adjacent = new HashSet<Cell>();
         foreach (Cell neighbor in neighbors)
         {
-            List<Cell> temp = getEmptyNeighbors(neighbor);
-            temp.ForEach(x => neighbor_adjacent.Add(neighbor));
+            List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
+            neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
         }
-        return empty.Intersect(neighbor_adjacent).ToList();
+        var prelim = empty.Intersect(neighbor_adjacent).ToList();
+        return prelim.ToList();
+    }
+
+    public List<Cell> hypotheticalAdjacentLegalCells(Cell cell, Cell exclude)
+    {
+        List<Cell> empty = getEmptyNeighbors(cell);
+        List<Cell> neighbors = getOccupiedNeighbors(cell);
+        neighbors.Remove(exclude);
+        HashSet<Cell> neighbor_adjacent = new HashSet<Cell>();
+        foreach (Cell neighbor in neighbors)
+        {
+            List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
+            neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
+        }
+        var prelim = empty.Intersect(neighbor_adjacent).ToList();
+        return prelim.ToList();
     }
 }
