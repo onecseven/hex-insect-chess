@@ -72,10 +72,9 @@ namespace Hive
                 case Pieces.MOSQUITO:
                     return Mosquito._getLegalMoves(board, piece.location);
                 case Pieces.ANT:
-                    throw new NotImplementedException();
+                    return Ant._getLegalMoves(board, piece.location);
                 default:
                     throw new NotImplementedException();
-                    break;
             }
         }    
     }
@@ -206,6 +205,16 @@ namespace Hive
     }
     public class Ant : Piece
     {
+        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        {
+            List<Cell> result = new List<Cell>();
+            foreach ((Cell cell, Hive.Piece piece) in board.piecesInPlay)
+            {
+                if (cell == origin) continue;
+                result.AddRange(board.getEmptyNeighbors(cell));
+            }
+            return result;
+        }
         public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
     }
 }
