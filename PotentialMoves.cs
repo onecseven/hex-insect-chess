@@ -3,6 +3,7 @@ using Hive;
 using Sylves;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class PotentialMoves : Node2D
 {
@@ -29,10 +30,9 @@ public partial class PotentialMoves : Node2D
                 if (lic == hoveringCell) return;
                 else
                 {
-                    //GD.Print("Current position potmov: ", currentPosition.X, " ", currentPosition.Y);
                     potentialMoves.Clear();
                     hoveringCell = lic;
-                    if (board.tileIsOccupied(lic))
+                    if (board.tileIsOccupied(lic) && TheHive.oneHiveRuleCheck(board, lic))
                     {
                         Piece piece = board.piecesInPlay[lic];
                         potentialMoves = Piece.getLegalMoves(piece, board);

@@ -47,11 +47,6 @@ namespace Hive
         public List<Piece> pieces = new List<Piece>();
         public bool isOccupied => pieces.Count > 0;
     }
-
-
-
-
-
     public class TheHive
     {
         public bool hasPieceAt(Cell cell)
@@ -63,13 +58,36 @@ namespace Hive
         {
         }
 
-        public void debugPlace(Hive.Piece piece)
-        {
-        }
+     #region rule checkers
+    static public HashSet<Cell> recursiveGetNeighbors(BoardNode board, Cell cell, HashSet<Cell> memo, Cell? excludedCell)
+    {
+       List<Cell> neighbors = board.getOccupiedNeighbors(cell);
+       if (excludedCell.HasValue) neighbors.Remove(excludedCell.Value);
+       if (neighbors.Count == 0 || neighbors.All(item => memo.Contains(item))) return memo;
+       foreach (Cell neighbor in neighbors)
+       {
+            memo.Add(neighbor);
+       }
+       foreach (Cell neighbor in neighbors)
+       {
+            memo = recursiveGetNeighbors(board, neighbor, memo, excludedCell);
+       }
+       return memo;
     }
-
+    public static bool oneHiveRuleCheck(BoardNode board, Cell movingPiece)
+    {
+        HashSet<Cell> hypoHive = new HashSet<Cell>();
+        List<Cell> prelim = board.piecesInPlay.Keys.ToList();
+        prelim.Remove(movingPiece);
+        Cell first = prelim.First();
+        int target = prelim.Count;
+        HashSet<Cell> computed = recursiveGetNeighbors(board, first, hypoHive, movingPiece);  
+        if (computed.Count != target) return false;
+        return true;
+    }
+        #endregion
+    }
     #region moves
-
 
     public partial class Move: GodotObject
     {
@@ -111,6 +129,7 @@ namespace Hive
         }
     }
     #endregion
+
 
 }
 // + player kind
