@@ -25,7 +25,6 @@ namespace Hive
         public  Texture2D texture { get {
                 return _textures[this.type];
             } }
-
         public Piece(Pieces t, Players o, Cell l)
         {
             type = t;
@@ -78,7 +77,6 @@ namespace Hive
             }
         }    
     }
-
     public class Bee : Piece
     {
         public Bee(Players p, Cell l) : base(Pieces.BEE, p, l) { }

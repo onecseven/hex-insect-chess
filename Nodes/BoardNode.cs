@@ -13,7 +13,6 @@ public partial class BoardNode : Node2D
     private Player whitePlayer = new Player(Players.WHITE);
     private Player blackPlayer = new Player(Players.BLACK);
     public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() {
-        [new Cell(0, 0, 0)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(0, 0)),
         [new Cell(5, 4, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 4,-9)),
         [new Cell(5 ,5, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 5, -10)),
         [new Cell(6, 4, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(6, 4, -10)),
@@ -23,8 +22,6 @@ public partial class BoardNode : Node2D
         [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
         [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
         [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
-
-
     };
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
