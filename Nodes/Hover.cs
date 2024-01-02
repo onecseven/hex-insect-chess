@@ -24,7 +24,6 @@ public partial class Hover : Node2D
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		if (grid == null) return;
-
         if (@event is InputEventMouse)
 		{
 			Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
@@ -32,9 +31,7 @@ public partial class Hover : Node2D
 
                 if (lic == hoveringCell) return;
 				else
-
 				{
-                    //GD.Print("Current position hover: ", currentPosition.X, " ", currentPosition.Y);
                     hoveringCell = lic;
 					QueueRedraw();
 				}
@@ -47,7 +44,6 @@ public partial class Hover : Node2D
 		if (grid.hexes.ContainsKey(hoveringCell))
 		{
             Vector3 center = grid.hexes[hoveringCell];
-            //GD.Print("hover draw ", center);
 			var super_shapes = grid.GetHexCornersFromCenter(new Vector2(center.X, center.Y));
 			for (int i = 0; i < super_shapes.Length; i++)
 			{

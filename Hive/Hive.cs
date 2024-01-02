@@ -81,7 +81,7 @@ namespace Hive
         prelim.Remove(movingPiece);
         Cell first = prelim.First();
         int target = prelim.Count;
-        HashSet<Cell> computed = recursiveGetNeighbors(board, first, hypoHive, movingPiece);  
+        HashSet<Cell> computed = recursiveGetNeighbors(board, first, hypoHive, movingPiece);
         if (computed.Count != target) return false;
         return true;
     }
