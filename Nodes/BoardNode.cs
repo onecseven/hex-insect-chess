@@ -82,4 +82,17 @@ public partial class BoardNode : Node2D
         var prelim = empty.Intersect(neighbor_adjacent).ToList();
         return prelim.ToList();
     }
+
+
+    //this is for the freedom to move rule right?
+
+    public List<Cell> connectingAdjacents(Cell a, Cell b)
+    {
+        List<Cell> aNeighbors = HiveUtils.getNeighbors(a);
+        List<Cell> bNeighbors = HiveUtils.getNeighbors(b);
+        List<Cell> union = aNeighbors.Intersect(bNeighbors).ToList();
+        HiveUtils.Unroll("computed neighbors", union);
+        if (union.Count > 0 && union.Count == 2) return union;
+        else throw new Exception("connectingAdjacents fucked up somewhere!");
+    }
 }
