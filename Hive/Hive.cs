@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using System.Runtime.ExceptionServices;
 
 namespace Hive
 {
@@ -40,6 +41,54 @@ namespace Hive
     }
 
     #endregion
+
+    public class Path
+    {
+        public List<Cell> steps;
+        public Cell last
+        {
+            get
+            {
+                if (steps.Count < 1) throw new ArgumentOutOfRangeException("path class");
+                return steps[steps.Count - 1];
+            }
+        }
+        public Cell penult
+        {
+            get
+            {
+                if (steps.Count < 2) throw new ArgumentOutOfRangeException("path class");
+                return steps[steps.Count - 2];
+            }
+        }
+        public bool isSingleStep { get => steps.Count == 1; }
+        public List<(Cell first, Cell last)> pairs { get
+            {
+                if (isSingleStep) { return new List<(Cell first, Cell last)>(); }
+                List<(Cell first, Cell last)> result = new List<(Cell first, Cell last)>();
+                for (int i = 0; i < steps.Count - 2; i++)
+                {
+                    //int next = i + 1 > steps.Count - 1 ? 0 : i + 1;
+                    result.Add((steps[i], steps[i + 1]));
+                }
+                return result;
+            }
+        }
+        public Path(List<Cell> steps)
+        {
+            this.steps = steps;
+        }
+
+        public bool isNullPath { get => steps.Count == 0;}
+        public Path(Cell step)
+        {
+            this.steps = new List<Cell>() { step };
+        }
+        public Path(params Cell[] step)
+        {
+            this.steps = step.ToList();
+        }
+    }
     public class Tile
     {
 
