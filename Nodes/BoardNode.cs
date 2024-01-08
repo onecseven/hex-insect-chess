@@ -22,7 +22,6 @@ public partial class BoardNode : Node2D
         [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
         [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
         [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
-        [new Cell(2, 6, -8)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(2, 6, -8))
     };
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)

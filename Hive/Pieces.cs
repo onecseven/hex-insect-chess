@@ -237,15 +237,7 @@ namespace Hive
 
         public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
         {
-            List<Path> result = new List<Path>();
-            List<Cell> potentialSquares = new List<Cell>();
-            foreach ((Cell cell, Hive.Piece piece) in board.piecesInPlay)
-            {
-                if (cell == origin) continue;
-                potentialSquares.AddRange(board.getEmptyNeighbors(cell));
-            }
-
-            return result;
+            return findAll(board, origin, new HashSet<Cell>()).ToList().Select(x => new Path(x)).ToList();
         }
         public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
     }
