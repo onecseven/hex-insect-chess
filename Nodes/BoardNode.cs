@@ -22,10 +22,19 @@ public partial class BoardNode : Node2D
         [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
         [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
         [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
+        [new Cell(2, 6, -8)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(2, 6, -8))
     };
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
     {
+        var p = Ant.findAll(this, new Cell(5, 4, -9), new HashSet<Cell>());
+        //var pollo = .findViablePath(this, new Cell(5, 4, -9), new Cell(7, 6, -13), new List<Cell>());
+        //foreach(var piece in p.Steps)
+        //{
+        //    //GD.Print(piece.Src);
+        //    //GD.Print(piece.Dest);
+        //}
+        HiveUtils.Unroll("all", p);
         Player pieceOwner = move.player == Hive.Players.BLACK ? blackPlayer : whitePlayer;
         Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
         if (pieceOwner.hasPiece(newPiece.type))
@@ -82,17 +91,37 @@ public partial class BoardNode : Node2D
         var prelim = empty.Intersect(neighbor_adjacent).ToList();
         return prelim.ToList();
     }
-
-
+    public List<Cell> hypotheticalAdjacentLegalCells(Cell cell, List<Cell> exclude)
+    {
+        List<Cell> empty = getEmptyNeighbors(cell);
+        List<Cell> neighbors = getOccupiedNeighbors(cell);
+        foreach (Cell toExclude in exclude)
+        {
+            neighbors.Remove(toExclude);   
+        }
+        HashSet<Cell> neighbor_adjacent = new HashSet<Cell>();
+        foreach (Cell neighbor in neighbors)
+        {
+            List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
+            neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
+        }
+        var prelim = empty.Intersect(neighbor_adjacent).Where(next => CanMoveBetween(cell, next)).ToList();
+        return prelim.ToList();
+    }
     //this is for the freedom to move rule right?
-
     public List<Cell> connectingAdjacents(Cell a, Cell b)
     {
         List<Cell> aNeighbors = HiveUtils.getNeighbors(a);
         List<Cell> bNeighbors = HiveUtils.getNeighbors(b);
         List<Cell> union = aNeighbors.Intersect(bNeighbors).ToList();
+        GD.Print("stepa", a);
+        GD.Print("stepb", b);
         HiveUtils.Unroll("computed neighbors", union);
+        GD.Print("neighbord connected", union.All(tileIsOccupied));
         if (union.Count > 0 && union.Count == 2) return union;
         else throw new Exception("connectingAdjacents fucked up somewhere!");
     }
+
+    public bool CanMoveBetween(Cell a, Cell b) => !connectingAdjacents(a,b).All(cell => tileIsOccupied(cell));
+   
 }

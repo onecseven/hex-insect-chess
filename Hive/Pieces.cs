@@ -53,7 +53,7 @@ namespace Hive
                     throw new ArgumentException("unrecognized piece type cannot be created");
             }
         }
-        public static List<Cell> getLegalMoves(Piece piece, BoardNode board)
+        public static List<Path> getLegalMoves(Piece piece, BoardNode board)
         {
             //GD.Print(piece.location);
             switch (piece.type)
@@ -80,22 +80,21 @@ namespace Hive
     public class Bee : Piece
     {
         public Bee(Players p, Cell l) : base(Pieces.BEE, p, l) { }
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin) => board.adjacentLegalCells(origin);
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin) => board.adjacentLegalCells(origin).Select(cell => new Path(cell)).ToList();
     }
     public class Mosquito : Piece
     {
         bool beetleMode = false;
         Piece blockedPiece = null;
-
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin) {
-            List<Cell> result = new List<Cell>();
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin) {
+            List<Path> result = new List<Path>();
             Piece originalPiece = board.piecesInPlay[origin];
             List<Cell> occupied_guys = board.getOccupiedNeighbors(origin);
             foreach (Cell occupied in occupied_guys)
             {
                 Pieces current_type = board.piecesInPlay[occupied].type;
                 if (current_type == Pieces.MOSQUITO) continue;
-                List<Cell> convertedMoves = Piece.getLegalMoves(new Piece(current_type, originalPiece.owner, origin), board);
+                List<Path> convertedMoves = Piece.getLegalMoves(new Piece(current_type, originalPiece.owner, origin), board);
                 result.AddRange(convertedMoves);
             }
             return result;
@@ -105,11 +104,10 @@ namespace Hive
     }
     public class Ladybug : Piece
     {
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
         {
             List<Cell> pathOrigins = board.getOccupiedNeighbors(origin);
-            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> paths = new();
-            List<Cell> endpoints = new();
+            List<Path> paths = new();
             foreach (Cell firstStep in pathOrigins)
             {
 
@@ -119,33 +117,32 @@ namespace Hive
                 foreach (Cell seStep in secondStep)
                 {
                     List<Cell> lastStep = board.getEmptyNeighbors(seStep);
-                    lastStep.ForEach(last => paths.Add((firstStep, seStep, last)));
-                    lastStep.ForEach(endpoints.Add);
+                    lastStep.ForEach(last => paths.Add(new Path(new List<Cell>() { firstStep, seStep, last })));
                 }
             }
             HiveUtils.Unroll("Path", paths);
-            return endpoints;
+            return paths;
         }
         public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l) { }
     }
     public class Beetle : Piece
     {
         Piece blockedPiece = null;
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
         {
             List<Cell> result = new List<Cell>();
             result.AddRange(board.adjacentLegalCells(origin));
             result.AddRange(board.getOccupiedNeighbors(origin));
-            return result;
+            return result.ConvertAll<Path>(cell => new Path(cell));
         }
         public Beetle(Players p, Cell l) : base(Pieces.BEETLE, p, l) { }  
     }
     public class Spider : Piece
     {
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
         {
             List<Cell> pathOrigins = board.adjacentLegalCells(origin);
-            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> paths = new();
+            List<Path> paths = new();
             List<Cell> endpoints = new();
             foreach (Cell firstStep in pathOrigins)
             {
@@ -157,18 +154,17 @@ namespace Hive
                 {
                     List<Cell> lastStep = board.hypotheticalAdjacentLegalCells(seStep, origin);
                     lastStep.Remove(firstStep);
-                    lastStep.ForEach(last => paths.Add((firstStep, seStep, last)));
-                    lastStep.ForEach(endpoints.Add);
+                    lastStep.ForEach(last => paths.Add(new Path(firstStep, seStep, last)));
                 }
             }
             HiveUtils.Unroll("Path", paths);
-            return endpoints;
+            return paths;
         }
         public Spider(Players p, Cell l) : base(Pieces.SPIDER, p, l) { }
     }
     public class Grasshopper : Piece
     {
-        private static Cell traverseDirection(Cell startPoint, Cell direction, BoardNode board)
+        private static Path traverseDirection(Cell startPoint, Cell direction, BoardNode board)
         {
             List<Cell> result = new List<Cell>() { startPoint };
             Cell current = startPoint;
@@ -184,14 +180,15 @@ namespace Hive
                 }
                 else
                 {
-                    return newOne;
+                    result.Add(newOne);
+                    return new Path(result);
                 }
             }
             throw new Exception("huh");
         }
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
         {
-            List<Cell> result = new List<Cell> ();
+            List<Path> result = new List<Path> ();
             foreach (Cell direction in HiveUtils.directions)
             {
                 Cell current = new Cell(origin.x + direction.x, origin.y + direction.y, origin.z + direction.z);
@@ -203,14 +200,51 @@ namespace Hive
     }
     public class Ant : Piece
     {
-        public static List<Cell> _getLegalMoves(BoardNode board, Cell origin)
+        //uh... how do we fix this one
+        public static HashSet<Cell> findAll(BoardNode board, Cell origin, HashSet<Cell> excluded)
         {
-            List<Cell> result = new List<Cell>();
+            excluded.Add(origin);
+            var adj = board.hypotheticalAdjacentLegalCells(origin, excluded.ToList()).Where(item => !excluded.Contains(item)); ;
+            GD.Print("Origin ", origin);
+            HiveUtils.Unroll("excluded", excluded);
+            HiveUtils.Unroll("findall adj", adj);
+            if (adj.All(item => excluded.Contains(item))) return excluded;
+            foreach(var p in adj)
+            {
+                excluded.UnionWith(findAll(board, p, excluded));
+                break;
+            }
+            return excluded;
+        }
+        public static List<Path> findViablePath(BoardNode board, Cell origin, Cell dest, List<Cell> excluded)
+        {
+            List<Path> result = new List<Path>();
+            excluded.Add(origin);
+            List<Cell> nextSteps = board.hypotheticalAdjacentLegalCells(origin, excluded);
+            if (nextSteps.Contains(dest) && board.CanMoveBetween(origin, dest)) 
+            {
+                excluded.Add(dest);
+                result.Add(new Path(excluded));
+                return result;
+            }
+            foreach (Cell step in nextSteps)
+            {
+                GD.Print("h");
+                result.AddRange(findViablePath(board, step, dest, excluded));
+            }
+            return result;
+        }
+
+        public static List<Path> _getLegalMoves(BoardNode board, Cell origin)
+        {
+            List<Path> result = new List<Path>();
+            List<Cell> potentialSquares = new List<Cell>();
             foreach ((Cell cell, Hive.Piece piece) in board.piecesInPlay)
             {
                 if (cell == origin) continue;
-                result.AddRange(board.getEmptyNeighbors(cell));
+                potentialSquares.AddRange(board.getEmptyNeighbors(cell));
             }
+
             return result;
         }
         public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
