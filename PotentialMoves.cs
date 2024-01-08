@@ -17,44 +17,44 @@ public partial class PotentialMoves : Node2D
     [Export]
     public Color ColorBase { get; set; } = Colors.Yellow;
 
-    private List<Cell> potentialMoves = new List<Cell>();
+    private List<Path> potentialMoves = new List<Path>();
     public override void _UnhandledInput(InputEvent @event)
     {
-        //if (grid == null || board == null) return;
+        if (grid == null || board == null) return;
 
-        //if (@event is InputEventMouse)
-        //{
-        //    Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
-        //    if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
-        //    {
-        //        if (lic == hoveringCell) return;
-        //        else
-        //        {
-        //            potentialMoves.Clear();
-        //            hoveringCell = lic;
-        //            if (board.tileIsOccupied(lic) && TheHive.oneHiveRuleCheck(board, lic))
-        //            {
-        //                Piece piece = board.piecesInPlay[lic];
-        //                potentialMoves = Piece.getLegalMoves(piece, board);
-        //            }
-        //            QueueRedraw();
-        //        }
-        //    }
-        //}
+        if (@event is InputEventMouse)
+        {
+            Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
+            if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
+            {
+                if (lic == hoveringCell) return;
+                else
+                {
+                    potentialMoves.Clear();
+                    hoveringCell = lic;
+                    if (board.tileIsOccupied(lic) && TheHive.oneHiveRuleCheck(board, lic))
+                    {
+                        Piece piece = board.piecesInPlay[lic];
+                        potentialMoves = Piece.getLegalMoves(piece, board);
+                    }
+                    QueueRedraw();
+                }
+            }
+        }
     }
     public override void _Draw()
     {
-        foreach (Cell cell in potentialMoves) {
-            if (grid.hexes.TryGetValue(cell, out var center))
-            {
-                //GD.Print("potentialmoves draw ", center, cell);
-                var super_shapes = grid.GetHexCornersFromCenter(new Vector2(center.X, center.Y));
-                for (int i = 0; i < super_shapes.Length; i++)
+        foreach (Path _path in potentialMoves) {
+                if (grid.hexes.TryGetValue(_path.last, out var center))
                 {
-                    int next = i + 1 > super_shapes.Length - 1 ? 0 : i + 1;
-                    DrawLine(super_shapes[i] + grid.Position, super_shapes[next] + grid.Position, ColorBase, 1);
+                    GD.Print("potentialmoves draw ", center);
+                    var super_shapes = grid.GetHexCornersFromCenter(new Vector2(center.X, center.Y));
+                    for (int i = 0; i < super_shapes.Length; i++)
+                    {
+                        int next = i + 1 > super_shapes.Length - 1 ? 0 : i + 1;
+                        DrawLine(super_shapes[i] + grid.Position, super_shapes[next] + grid.Position, ColorBase, 1);
+                    }
                 }
-            }
         }
     }
 }
