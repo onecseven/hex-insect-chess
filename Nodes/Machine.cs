@@ -50,7 +50,7 @@ public partial class Machine : Node
 			2b. each step in the path must abide by the freedom to move rule
 			2c. the move cannot at any point break the one hive rule
 		3. if the first three moves of the game for any particular player do not include a placement for the bee, then the only valid fourth move is bee placement [x] hasPlayerPlayedBee and mustPlayBee
-		4. moves must check for wincon status after every move happens
+		4. moves must check for wincon status after every move happens [x]
 		5. after turn pass but before the game idles to receive moves, it must check that the player who's about to move has any legal moves. if they do not, then it autopasses.
 	 */
     bool checkIfPlayerTurn(Move move) => move.player == turn;
@@ -87,6 +87,14 @@ public partial class Machine : Node
         if (belowLimit && hasPlayedThreeMoves && !hasPlayedBee) return true;
         else if (!belowLimit && !hasPlayedThreeMoves && !hasPlayedBee) throw new ArgumentException("illegal game state");
         return false;
+    }
+    bool hasPlayerWon(Hive.Players player)
+    {
+        List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner != player).Select(kvp => kvp.Value).ToList();
+        Piece bee = playerPieces.Where(pce => pce.type == Pieces.BEE).FirstOrDefault();
+        if (bee == null) return false;
+        if (board.getOccupiedNeighbors(bee.location).Count == 6) return true;
+        else return false;
     }
     #endregion
     public bool wincon_check()

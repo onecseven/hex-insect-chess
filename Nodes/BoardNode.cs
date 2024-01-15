@@ -23,7 +23,6 @@ public partial class BoardNode : Node2D
         [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
         [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
     };
-    public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
     {
         Player pieceOwner = move.player == Hive.Players.BLACK ? blackPlayer : whitePlayer;
