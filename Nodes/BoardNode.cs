@@ -26,14 +26,7 @@ public partial class BoardNode : Node2D
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
     {
-        var p = Ant.findAll(this, new Cell(5, 4, -9), new HashSet<Cell>());
-        //var pollo = .findViablePath(this, new Cell(5, 4, -9), new Cell(7, 6, -13), new List<Cell>());
-        //foreach(var piece in p.Steps)
-        //{
-        //    //GD.Print(piece.Src);
-        //    //GD.Print(piece.Dest);
-        //}
-        HiveUtils.Unroll("all", p);
+
         Player pieceOwner = move.player == Hive.Players.BLACK ? blackPlayer : whitePlayer;
         Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
         if (pieceOwner.hasPiece(newPiece.type))
@@ -42,7 +35,16 @@ public partial class BoardNode : Node2D
             piecesInPlay.Add(newPiece.location, newPiece);
             QueueRedraw();
         }
-        else throw new ArgumentException("trying to place piece that has not location");
+        else throw new ArgumentException("trying to place piece that has no location");
+    }
+    public void move(MOVE_PIECE move)
+    {
+        if (piecesInPlay.ContainsKey(move.origin) && !piecesInPlay.ContainsKey(move.destination))
+        {
+            piecesInPlay[move.destination] = Piece.create(piecesInPlay[move.origin].type, piecesInPlay[move.origin].owner, move.destination);
+            piecesInPlay.Remove(move.origin);
+            QueueRedraw();
+        }
     }
     public void initialPlace(INITIAL_PLACE move) => place(new Hive.PLACE(move.player, move.piece, move.destination));
     public override void _Draw()
@@ -87,7 +89,7 @@ public partial class BoardNode : Node2D
             List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
             neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
         }
-        var prelim = empty.Intersect(neighbor_adjacent).ToList();
+        var prelim = empty.Intersect(neighbor_adjacent).Where(next => CanMoveBetween(cell, next)).ToList();
         return prelim.ToList();
     }
     public List<Cell> hypotheticalAdjacentLegalCells(Cell cell, List<Cell> exclude)
@@ -113,10 +115,6 @@ public partial class BoardNode : Node2D
         List<Cell> aNeighbors = HiveUtils.getNeighbors(a);
         List<Cell> bNeighbors = HiveUtils.getNeighbors(b);
         List<Cell> union = aNeighbors.Intersect(bNeighbors).ToList();
-        GD.Print("stepa", a);
-        GD.Print("stepb", b);
-        HiveUtils.Unroll("computed neighbors", union);
-        GD.Print("neighbord connected", union.All(tileIsOccupied));
         if (union.Count > 0 && union.Count == 2) return union;
         else throw new Exception("connectingAdjacents fucked up somewhere!");
     }
