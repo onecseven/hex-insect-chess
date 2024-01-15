@@ -26,7 +26,6 @@ public partial class BoardNode : Node2D
     public List<Hive.Piece> theHive = new List<Hive.Piece> (); 
     public void place(PLACE move)
     {
-
         Player pieceOwner = move.player == Hive.Players.BLACK ? blackPlayer : whitePlayer;
         Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
         if (pieceOwner.hasPiece(newPiece.type))
@@ -56,8 +55,6 @@ public partial class BoardNode : Node2D
                 Vector3 center = grid.hexes[piece.location];
                 DrawTexture(piece.texture, (HiveUtils.Vector3ToVector2(center) + grid.Position) - new Vector2(16,16));
             }
-            //get tile location (copy from hove)
-            //draw texture 
         }
 	}
     public List<Cell> getEmptyNeighbors(Cell cell) => getNeighbors(cell).Where(x => !tileIsOccupied(x)).ToList();
