@@ -14,7 +14,7 @@ public partial class Machine : Node
 		1. placement must check that the location in the Move
 	    only be adjacent to pieces that are the same color as
 	    the player who sent the move [x] (placementLegalityCheck)
-			1a. initial placement is the only placement that can start adjacent to the opposite color
+			1a. initial placement is the only placement that can start adjacent to the opposite color [x] (initialplacementlegality check)
 		2. move must be legal (as in the output of Piece.getLegalMoves must include the endpoint)
 			2a. move must have the correct origin for the piece
 			2b. each step in the path must abide by the freedom to move rule
@@ -69,9 +69,10 @@ public partial class Machine : Node
         else if (moves.Count == 1)
         {
             bool isCorrectUser = moves[0].player != move.player;
-            bool isAdjacentToFirstPiece = board.connectingAdjacents
-                //(((Hive.PLACE)moves[0]).destination).cp
+            bool isAdjacentToFirstPiece = board.AreCellsAdjacent(((Hive.INITIAL_PLACE)moves[0]).destination, move.destination);
+            if (isCorrectUser && isAdjacentToFirstPiece) return true;
         }
+        return false;
     }
     public bool wincon_check()
     {
