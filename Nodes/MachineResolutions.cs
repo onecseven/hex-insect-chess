@@ -10,7 +10,8 @@ public partial class Machine : Node
     BoardNode board { get => _board; set {
             _board = value;
             InitialPlacement += _board.initialPlace;
-            Placement += _board.place  ;
+            Placement += _board.place;
+            PieceMoved += _board.move;
         }}
 
     private void Machine_Placement(PLACE move)

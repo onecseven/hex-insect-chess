@@ -32,6 +32,8 @@ public partial class Hover : Node2D
                 if (lic == hoveringCell) return;
 				else
 				{
+					//HiveUtils.Unroll("ADJACENTS", HiveUtils.getNeighbors(lic));
+					//HiveUtils.Unroll("ADJACENTS(BOARD)", grid.grid.GetNeighbours(lic));
                     hoveringCell = lic;
 					QueueRedraw();
 				}

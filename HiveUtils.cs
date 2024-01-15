@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 public class HiveUtils
 {
+    public static bool AreCellsAdjacent(Cell a, Cell B) => HiveUtils.getNeighbors(a).Contains(B);
     public static void PrettyPrint(Object obj)
     {
         foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
