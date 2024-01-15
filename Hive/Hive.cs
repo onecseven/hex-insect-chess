@@ -89,13 +89,13 @@ namespace Hive
             this.steps = step.ToList();
         }
     }
-    public class Tile
-    {
+    //public class Tile
+    //{
 
-        public Cell cell;
-        public List<Piece> pieces = new List<Piece>();
-        public bool isOccupied => pieces.Count > 0;
-    }
+    //    public Cell cell;
+    //    public List<Piece> pieces = new List<Piece>();
+    //    public bool isOccupied => pieces.Count > 0;
+    //}
     public class TheHive
     {
         public bool hasPieceAt(Cell cell)
@@ -108,7 +108,7 @@ namespace Hive
         }
 
      #region rule checkers
-    static public HashSet<Cell> recursiveGetNeighbors(BoardNode board, Cell cell, HashSet<Cell> memo, Cell? excludedCell)
+    static private HashSet<Cell> recursiveGetNeighbors(BoardNode board, Cell cell, HashSet<Cell> memo, Cell? excludedCell)
     {
        List<Cell> neighbors = board.getOccupiedNeighbors(cell);
        if (excludedCell.HasValue) neighbors.Remove(excludedCell.Value);
@@ -134,6 +134,8 @@ namespace Hive
         if (computed.Count != target) return false;
         return true;
     }
+
+    //freedom to move is on boardnode
         #endregion
     }
     #region moves
