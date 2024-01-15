@@ -20,7 +20,6 @@ namespace Hive
                 [Pieces.LADYBUG] = GD.Load<Texture2D>("res://assets/ladybug.png"),
                 [Pieces.MOSQUITO] = GD.Load<Texture2D>("res://assets/mosquito.png"),
                 [Pieces.SPIDER] = GD.Load<Texture2D>("res://assets/spider.png"),
-
         };
         public  Texture2D texture { get {
                 return _textures[this.type];
@@ -200,7 +199,6 @@ namespace Hive
     }
     public class Ant : Piece
     {
-        //uh... how do we fix this one
         public static HashSet<Cell> findAll(BoardNode board, Cell origin, HashSet<Cell> excluded)
         {
             excluded.Add(origin);
@@ -242,149 +240,3 @@ namespace Hive
         public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
     }
 }
-
-
-////using Sylves;
-////using System.ComponentModel;
-////using System.Diagnostics;
-////using System.Collections.Generic;
-
-////public static class IEnumerableExtensions
-////{
-////    public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
-////       => self.Select((item, index) => (item, index));
-////}
-//    namespace Hive
-//{
-//    public enum Pieces
-//    {
-//        BEE,
-//        ANT,
-//        SPIDER,
-//        GRASSHOPPER,
-//        MOSQUITO,
-//        BEETLE,
-//        LADYBUG,
-//    }
-//    public abstract class Piece
-//    {
-//        public Players owner;
-//        public Cell location;
-//        public Pieces type;
-//        //public abstract List<Cell> getLegalMoves(Hive.Board board); 
-//        //public static bool isBlocked(Hive.Board board, Piece piece) {
-//        //    Tile? tile = board.getTileAt(piece.location);
-//        //    if (tile == null) throw new Exception("Tile not found");
-//        //    switch (tile.pieces.Count)
-//        //    {
-//        //        case 0:
-//        //            throw new Exception("Piece not found");
-//        //        case 1:
-//        //            return false;
-//        //        case 2:
-//        //        {
-//        //                int index = tile.pieces.IndexOf(piece);
-//        //                if (index == 0) return false;
-//        //                else if (index == -1) throw new Exception("Piece not found");
-//        //                else if (index > 0) return true;
-//        //                break;
-//        //        }
-//        //        default:
-//        //            throw new Exception("We shouldn't be here");
-
-//        //    }
-//        //    throw new Exception("We shouldn't be here #2");
-//        //}
-//    }
-//    public class Bee: Hive.Piece
-//    {
-//        public Bee(Players player) => owner = player;
-
-//        public  List<Cell> getLegalMoves(Hive.Board board) => Bee._getLegalMoves(board, this.location);
-//    }
-//    public class Spider: Hive.Piece {
-//        public Spider(Players player) => owner = player;
-
-//        public static List<(Cell origin, Cell secondStep, Cell thirdStep)> _getLegalMoves(Hive.Board board, Cell origin) {
-//            List<Cell> pathOrigins = board.adjacentLegalCells(origin);
-//            HashSet<(Cell origin, Cell secondStep, Cell thirdStep)> results = new();
-//            foreach (Cell firstStep in pathOrigins)
-//            {
-//                List<Cell> secondStep = board.adjacentLegalCells(firstStep);
-//                secondStep.Remove(origin);
-//                foreach (Cell seStep in secondStep)
-//                {
-//                    List<Cell> lastStep = board.adjacentLegalCells(seStep); 
-//                    lastStep.Remove(firstStep);
-//                    lastStep.ForEach(last => results.Add((firstStep, seStep, last)));
-//                }
-//            }
-//            return results.ToList();
-//        }
-//        public List<(Cell origin, Cell secondStep, Cell thirdStep)> getLegalMoves(Hive.Board board, bool typeDecoy = false) => Spider._getLegalMoves(board, this.location);
-
-
-//    }
-//    public class Grasshopper : Hive.Piece
-//    {
-//        private static List<Cell> getLineUntilEmpty(Hive.Board board, Cell origin, (int x, int y, int z) dir)
-//        {
-//            List<Cell> line = new List<Cell>();
-//            var current = new Cell(origin.x + dir.x, origin.y + dir.y, origin.z + dir.z);
-//            bool finished = false;
-//            while (!finished)
-//            {
-//                if (board.hasPieceAt(current))
-//                {
-//                    line.Add(current);
-//                    current = new Cell(current.x + dir.x, current.y + dir.y, current.z + dir.z);
-//                }
-//                else
-//                {
-//                    finished = true;    
-//                }
-//            }
-//            return line;
-//        }
-//        public static List<List<Cell>> _getLegalMoves(Hive.Board board, Cell origin)
-//        {
-//            List<(int,int,int)> origins = new List<(int, int, int)>();
-//            List<List<Cell>> result = new(new List<List<Cell>>());
-//            foreach (var (dir, index)  in board.directions.WithIndex())
-//            {
-//                Cell currentDirection =  new Cell(origin.x + dir.Item1, origin.y + dir.Item2, origin.z + dir.Item3);
-//                if (board.hasPieceAt(currentDirection)) origins.Add(dir);
-//            }
-//            foreach (var dir in origins)
-//            {
-//                result.Add(getLineUntilEmpty(board, origin, dir));
-//            }
-//            return result;
-//        }
-//        public List<List<Cell>> getLegalMoves(Board board) => _getLegalMoves(board, this.location);
-//    }
-//    public class Mosquito {
-//    /*
-//        * 1. get all occupied nieghbors.
-//        * 2. use their types get legal moves.-
-//        */
-//    }
-//    public class Beetle { 
-//    /*
-//        * 1. bee movement
-//        * 2. add the immediately adjacent tiles with neighbors on it
-//        */
-//    }
-//    public class Ant {
-//    /*
-//        * 1. i don't even know...
-//        */
-//    }
-//    public class Ladybug { 
-//    /*
-//        * 1. research
-//        */
-//    }
-
-//}
-
