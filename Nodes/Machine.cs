@@ -41,22 +41,16 @@ public partial class Machine : Node
     }
 
     #region validators
-    /* Move validators 
-     * finished
-		0. The moves can only be emitted for players who match the turn color [x] (check if playerturn)
-		1. placement must check that the location in the Move
-	    only be adjacent to pieces that are the same color as
-	    the player who sent the move [x] (placementLegalityCheck)
-			1a. initial placement is the only placement that can start adjacent to the opposite color [x] (initialplacementlegality check)
-		3. if the first three moves of the game for any particular player do not include a placement for the bee, then the only valid fourth move is bee placement [x] hasPlayerPlayedBee and mustPlayBee
-		4. moves must check for wincon status after every move happens [x]
-    * TODO
-		2. move must be legal (as in the output of Piece.getLegalMoves must include the endpoint) [move is legal]
-			2a. move must have the correct origin for the piece [move is legal]
-			2b. each step in the path must abide by the freedom to move rule [path is legal]
-			2c. the move cannot at any point break the one hive rule [uh gotta implement oneHiveRuleCheck somewhere] (first move check)
-		5. after turn pass but before the game idles to receive moves, [before move gets submitted, eg: on phase change]
-            it must check that the player who's about to move has any legal moves. if they do not, then it autopasses. [autopass check region]
+
+    /** TODO
+     * 0. on turn change, check whether player has any possible moves. if not, check that it has pieces remaining to play and that it has a legal target to play them on
+     *    if these checks don't pass, automatically pass the turn.
+     * 1. move validation check one: player matches turn
+     *    1A. if move is placement, run placementLegalityCheck
+     *    1B. if move is initialPlacement, run initialPlacementLegalityCheck
+     *    1c. if move is move_piece, run moveIsLegal check AND oneHiveRuleCheck
+     * 2. run wincon check after move goes through. if the wincon check passes, move the phase, end the game.
+     * 3. after wincon check and turn pass, run autopass check.
      */
     bool checkIfPlayerTurn(Move move) => move.player == turn;
 
