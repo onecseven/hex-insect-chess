@@ -1,8 +1,10 @@
 using Godot;
 using Hive;
+using Sylves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 
 public partial class Machine : Node
 {
@@ -40,25 +42,48 @@ public partial class Machine : Node
 
     #region validators
     /* Move validators 
+     * finished
 		0. The moves can only be emitted for players who match the turn color [x] (check if playerturn)
 		1. placement must check that the location in the Move
 	    only be adjacent to pieces that are the same color as
 	    the player who sent the move [x] (placementLegalityCheck)
 			1a. initial placement is the only placement that can start adjacent to the opposite color [x] (initialplacementlegality check)
-		2. move must be legal (as in the output of Piece.getLegalMoves must include the endpoint)
-			2a. move must have the correct origin for the piece
-			2b. each step in the path must abide by the freedom to move rule
-			2c. the move cannot at any point break the one hive rule
 		3. if the first three moves of the game for any particular player do not include a placement for the bee, then the only valid fourth move is bee placement [x] hasPlayerPlayedBee and mustPlayBee
 		4. moves must check for wincon status after every move happens [x]
-		5. after turn pass but before the game idles to receive moves, it must check that the player who's about to move has any legal moves. if they do not, then it autopasses.
-	 */
+    * TODO
+		2. move must be legal (as in the output of Piece.getLegalMoves must include the endpoint) [move is legal]
+			2a. move must have the correct origin for the piece [move is legal]
+			2b. each step in the path must abide by the freedom to move rule [path is legal]
+			2c. the move cannot at any point break the one hive rule [uh gotta implement oneHiveRuleCheck somewhere] (first move check)
+		5. after turn pass but before the game idles to receive moves, [before move gets submitted, eg: on phase change]
+            it must check that the player who's about to move has any legal moves. if they do not, then it autopasses. [autopass check region]
+     */
     bool checkIfPlayerTurn(Move move) => move.player == turn;
-    bool placementLegalityCheck(Hive.PLACE move)
+
+    bool moveIsLegal(Hive.MOVE_PIECE move)
     {
-        List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(move.destination);
+        if (!board.piecesInPlay.ContainsKey(move.origin)) return false; 
+        Piece piece = board.piecesInPlay[move.origin];
+        List<Path> paths = Piece.getLegalMoves(piece, board);
+        Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
+        List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
+        if (endpoints.Contains(move.destination) && pathIsLegal(playerPath)) return true;
+        else return false;
+    }
+
+    bool pathIsLegal(Path path)
+    {
+        foreach ((Cell first, Cell last)  in path.pairs)
+        {
+            if (!board.CanMoveBetween(first, last)) return false; 
+        }
+        return true;
+    }
+    bool placementLegalityCheck(Cell destination, Hive.Players player)
+    {
+        List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(destination);
         List<Piece> actualPieces = surroundingPieces.Select(cel => board.piecesInPlay[cel]).ToList();
-        bool piecesBelongToMover = actualPieces.All(pieces => move.player == pieces.owner);
+        bool piecesBelongToMover = actualPieces.All(pieces => player == pieces.owner);
         if (actualPieces.Count > 0 && piecesBelongToMover) return true;
         return false;
     }
@@ -96,6 +121,33 @@ public partial class Machine : Node
         if (board.getOccupiedNeighbors(bee.location).Count == 6) return true;
         else return false;
     }
+
+    //autopass check
+    #region autopass checks
+    //only look into this if piece has no moves available
+    bool hasLegalPlacementTarget (Hive.Players player)
+    {
+        List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
+        foreach (Piece item in playerPieces)
+        {
+            List<Cell> neighbors = board.getEmptyNeighbors(item.location);
+            if (neighbors.Any(neigh => placementLegalityCheck(neigh, player))) return true;
+        }
+        return false;
+    }
+    bool playerHasPieces(Hive.Players player) => board.piecesInPlay.Where(kvp => kvp.Value.owner == player).ToList().Count < 13;
+    bool playerHasPossibleMoves(Hive.Players player)
+    {
+        List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
+        List<Path> possibleMoves = new List<Path>();
+        foreach (Piece piece in playerPieces) {
+            possibleMoves.AddRange(Piece.getLegalMoves(piece, board));
+        }
+        if (possibleMoves.Count == 0 || possibleMoves.All(path => path.isNullPath)) return false;
+        else return true;
+    }
+    #endregion
+
     #endregion
     public bool wincon_check()
     {
