@@ -108,32 +108,7 @@ namespace Hive
         }
 
      #region rule checkers
-    static private HashSet<Cell> recursiveGetNeighbors(BoardNode board, Cell cell, HashSet<Cell> memo, Cell? excludedCell)
-    {
-       List<Cell> neighbors = board.getOccupiedNeighbors(cell);
-       if (excludedCell.HasValue) neighbors.Remove(excludedCell.Value);
-       if (neighbors.Count == 0 || neighbors.All(item => memo.Contains(item))) return memo;
-       foreach (Cell neighbor in neighbors)
-       {
-            memo.Add(neighbor);
-       }
-       foreach (Cell neighbor in neighbors)
-       {
-            memo = recursiveGetNeighbors(board, neighbor, memo, excludedCell);
-       }
-       return memo;
-    }
-    public static bool oneHiveRuleCheck(BoardNode board, Cell movingPiece)
-    {
-        HashSet<Cell> hypoHive = new HashSet<Cell>();
-        List<Cell> prelim = board.piecesInPlay.Keys.ToList();
-        prelim.Remove(movingPiece);
-        Cell first = prelim.First();
-        int target = prelim.Count;
-        HashSet<Cell> computed = recursiveGetNeighbors(board, first, hypoHive, movingPiece);
-        if (computed.Count != target) return false;
-        return true;
-    }
+   
 
     //freedom to move is on boardnode
         #endregion
