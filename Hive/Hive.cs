@@ -37,7 +37,8 @@ namespace Hive
     {
         INITIAL_PLACE,
         PLACE,
-        MOVE_PIECE
+        MOVE_PIECE,
+        AUTOPASS
     }
 
     #endregion
@@ -144,7 +145,7 @@ namespace Hive
         }
     }
 
-        public partial class MOVE_PIECE : Move
+    public partial class MOVE_PIECE : Move
     {
         public Cell origin;
         public Cell destination;
@@ -152,6 +153,14 @@ namespace Hive
         {
             this.destination = destination;
             this.origin = origin;
+        }
+    }
+
+    public partial class AUTOPASS : Move
+    {
+        public AUTOPASS (Players player) : base(player, Pieces.MOSQUITO, MoveType.AUTOPASS)
+        {
+
         }
     }
     #endregion
