@@ -110,14 +110,9 @@ public partial class Machine : Node
     #region validators
 
     /** TODO
-     * 0. on turn change, check whether player has any possible moves. if not, check that it has pieces remaining to play and that it has a legal target to play them on
-     *    if these checks don't pass, automatically pass the turn. [x]
-     * 1. move validation check one: player matches turn [x]
-     *    1A. if move is placement, run placementLegalityCheck [x]
-     *    1B. if move is initialPlacement, run initialPlacementLegalityCheck [x]
-     *    1c. if move is move_piece, run moveIsLegal check AND oneHiveRuleCheck [x]
-     * 2. run wincon check after move goes through. if the wincon check passes, move the phase, end the game. [x]
-     * 3. after wincon check and turn pass, run autopass check.  [x]
+     * try to play a full game
+     * 1. turn label component.
+     * 2. move history?
      */
     bool checkIfPlayerTurn(Move move) => move.player == turn;
     bool moveIsLegal(Hive.MOVE_PIECE move)
