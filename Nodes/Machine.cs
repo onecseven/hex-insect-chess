@@ -22,7 +22,11 @@ public partial class Machine : Node
     #endregion
     public void send_move(Move move)
     {
-        if (!moveIsValid(move)) GD.Print("Validators");
+        if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
+        {
+            GD.Print("Invalid move");
+            return;
+        }
         switch (move.type)
         {
             case MoveType.INITIAL_PLACE:
@@ -34,11 +38,38 @@ public partial class Machine : Node
             case MoveType.PLACE:
                 EmitSignal(nameof(Placement), move);
                 break;
+            case MoveType.AUTOPASS:
+                break;
         }
         moves.Add(move);
-        //TODO
-        //advance turn
-        //turn start()
+        if (wincon_check()) game_over();
+        else advanceTurn();
+    }
+
+    public void advanceTurn()
+    {
+
+        turn = ((Hive.Players)((int)turn ^ 1));
+        autopassCheck();
+    }
+
+    public void autopassCheck()
+    {
+        if ((playerHasPieces(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
+        else
+        {
+            if (moves.Last().type == MoveType.AUTOPASS)
+            {
+                throw new Exception("AUTOPASS LOOP FUCK");
+            }
+            send_move(new AUTOPASS(turn));
+        };
+
+    }
+
+    public void game_over()
+    {
+        game_status = Phases.GAME_OVER;
     }
 
     private bool moveIsValid(Move move)
@@ -80,13 +111,13 @@ public partial class Machine : Node
 
     /** TODO
      * 0. on turn change, check whether player has any possible moves. if not, check that it has pieces remaining to play and that it has a legal target to play them on
-     *    if these checks don't pass, automatically pass the turn.
+     *    if these checks don't pass, automatically pass the turn. [x]
      * 1. move validation check one: player matches turn [x]
      *    1A. if move is placement, run placementLegalityCheck [x]
      *    1B. if move is initialPlacement, run initialPlacementLegalityCheck [x]
      *    1c. if move is move_piece, run moveIsLegal check AND oneHiveRuleCheck [x]
-     * 2. run wincon check after move goes through. if the wincon check passes, move the phase, end the game.
-     * 3. after wincon check and turn pass, run autopass check. 
+     * 2. run wincon check after move goes through. if the wincon check passes, move the phase, end the game. [x]
+     * 3. after wincon check and turn pass, run autopass check.  [x]
      */
     bool checkIfPlayerTurn(Move move) => move.player == turn;
     bool moveIsLegal(Hive.MOVE_PIECE move)
@@ -132,7 +163,6 @@ public partial class Machine : Node
         }
         return false;
     }
-
     bool mustPlayBee(Hive.Players player)
     {
         bool hasPlayerPlayedBee(Hive.Players player)
