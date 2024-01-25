@@ -10,8 +10,22 @@ using System.Xml.Serialization;
 public partial class Machine : Node
 {
     #region declarations
-    Hive.Phases game_status = Hive.Phases.PREPARED;
-    Hive.Players turn = Hive.Players.BLACK;
+
+    Hive.Phases _game_status = Hive.Phases.PREPARED;
+    Hive.Phases game_status { get => _game_status; set
+        {
+            _game_status = value;
+            EmitSignal(nameof(gameStatusChanged), _game_status.ToString());
+        } }
+    Hive.Players _turn = Hive.Players.BLACK;
+    Hive.Players turn
+    {
+        get => _turn; set
+        {
+            _turn = value;
+            EmitSignal(nameof(turnChanged), (int)_turn);
+        }
+    }
     List<Move> moves = new List<Move>();
     [Signal]
     public delegate void InitialPlacementEventHandler(Hive.INITIAL_PLACE move);
@@ -19,6 +33,17 @@ public partial class Machine : Node
     public delegate void PieceMovedEventHandler(Hive.MOVE_PIECE move);
     [Signal]
     public delegate void PlacementEventHandler(Hive.PLACE move);
+    [Signal]
+    public delegate void gameStatusChangedEventHandler(string game_status);
+    [Signal]
+    public delegate void turnChangedEventHandler(int player);
+
+    public override void _Ready()
+    {
+        EmitSignal(nameof(gameStatusChanged), _game_status.ToString());
+        EmitSignal(nameof(turnChanged), (int)_turn);
+    }
+
     #endregion
     public void send_move(Move move)
     {
@@ -223,7 +248,7 @@ public partial class Machine : Node
         }
         return memo;
     }
-    private bool oneHiveRuleCheck(Cell movingPiece)
+    public bool oneHiveRuleCheck(Cell movingPiece)
     {
         HashSet<Cell> hypoHive = new HashSet<Cell>();
         List<Cell> prelim = board.piecesInPlay.Keys.ToList();
