@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://2cgec1nfehp5"]
+
+[ext_resource type="Script" path="res://debug_piece_button.cs" id="1_qh1xd"]
+[ext_resource type="Texture2D" uid="uid://b8pecpdyxhioy" path="res://icon.svg" id="2_bpkib"]
+
+[node name="DebugPieceButton" type="HFlowContainer"]
+offset_right = 578.0
+offset_bottom = 155.0
+script = ExtResource("1_qh1xd")
+
+[node name="TextureButton" type="TextureButton" parent="."]
+layout_mode = 2
+texture_normal = ExtResource("2_bpkib")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "x???"
+
+[connection signal="pressed" from="TextureButton" to="." method="_on_texture_button_pressed"]

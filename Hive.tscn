@@ -1,11 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://bo78tmpm2j7m2"]
+[gd_scene load_steps=11 format=3 uid="uid://bo78tmpm2j7m2"]
 
 [ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="1_2md7f"]
 [ext_resource type="Script" path="res://Nodes/BoardNode.cs" id="2_5gm5w"]
 [ext_resource type="Script" path="res://PotentialMoves.cs" id="3_p4sjr"]
 [ext_resource type="PackedScene" uid="uid://pu8oamm6lk8b" path="res://hover.tscn" id="3_ra64y"]
+[ext_resource type="Script" path="res://playerLable.cs" id="4_4nsjd"]
 [ext_resource type="Script" path="res://Nodes/Machine.cs" id="5_1ousa"]
+[ext_resource type="Script" path="res://statusLable.cs" id="5_6jo6o"]
+[ext_resource type="Script" path="res://InternalMoveMaker.cs" id="6_uuio2"]
 [ext_resource type="PackedScene" uid="uid://dlnigsf4i8sb3" path="res://MoveSender.tscn" id="7_soia2"]
+[ext_resource type="Script" path="res://ButtonList.cs" id="10_hc76x"]
 
 [node name="Hive" type="Node2D"]
 
@@ -23,18 +27,51 @@ ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
 script = ExtResource("2_5gm5w")
 grid = NodePath("../../TatiHex")
 
-[node name="Machine" type="Node" parent="Game" node_paths=PackedStringArray("board")]
+[node name="Machine" type="Node" parent="Game" node_paths=PackedStringArray("board", "statusLabel", "playlable", "moveMaker", "debugButtons")]
 script = ExtResource("5_1ousa")
 board = NodePath("../BoardNode")
+statusLabel = NodePath("statusLable")
+playlable = NodePath("playerLable")
+moveMaker = NodePath("InternalMoveMaker")
+debugButtons = NodePath("../../Pieces")
+
+[node name="playerLable" type="Label" parent="Game/Machine"]
+offset_left = 107.0
+offset_top = 4.0
+offset_right = 147.0
+offset_bottom = 27.0
+script = ExtResource("4_4nsjd")
+
+[node name="statusLable" type="Label" parent="Game/Machine"]
+offset_left = 362.0
+offset_top = 4.0
+offset_right = 402.0
+offset_bottom = 27.0
+script = ExtResource("5_6jo6o")
+
+[node name="InternalMoveMaker" type="Node" parent="Game/Machine"]
+script = ExtResource("6_uuio2")
 
 [node name="Hover" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("3_ra64y")]
 grid = NodePath("../TatiHex")
 
-[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board")]
+[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board", "machine")]
 script = ExtResource("3_p4sjr")
 grid = NodePath("../TatiHex")
 board = NodePath("../Game/BoardNode")
 ColorBase = Color(1, 0, 0.0745098, 1)
+machine = NodePath("../Game/Machine")
 
 [node name="MoveSender" parent="." node_paths=PackedStringArray("machine") instance=ExtResource("7_soia2")]
 machine = NodePath("../Game/Machine")
+
+[node name="TODO_ INVENTORY,TERMINAL, MOVEHISTORY" type="Node" parent="."]
+
+[node name="Pieces" type="VFlowContainer" parent="." node_paths=PackedStringArray("inventory", "moveMaker")]
+offset_left = 1271.0
+offset_top = 3.0
+offset_right = 1609.0
+offset_bottom = 158.0
+script = ExtResource("10_hc76x")
+inventory = NodePath("../Game/BoardNode")
+moveMaker = NodePath("../Game/Machine/InternalMoveMaker")
