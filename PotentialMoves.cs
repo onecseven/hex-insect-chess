@@ -15,7 +15,10 @@ public partial class PotentialMoves : Node2D
     [Export]
 	public BoardNode board = null;
     [Export]
+
     public Color ColorBase { get; set; } = Colors.Yellow;
+    [Export]
+    public Machine machine = null;
 
     private List<Path> potentialMoves = new List<Path>();
     public override void _UnhandledInput(InputEvent @event)
@@ -32,7 +35,7 @@ public partial class PotentialMoves : Node2D
                 {
                     potentialMoves.Clear();
                     hoveringCell = lic;
-                    if (board.tileIsOccupied(lic) && TheHive.oneHiveRuleCheck(board, lic))
+                    if (board.tileIsOccupied(lic) && machine.oneHiveRuleCheck(lic))
                     {
                         Piece piece = board.piecesInPlay[lic];
                         potentialMoves = Piece.getLegalMoves(piece, board);
