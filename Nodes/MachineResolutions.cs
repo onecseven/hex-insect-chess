@@ -17,30 +17,48 @@ public partial class Machine : Node
             PieceMoved += _board.move;
         }
     }
-
-
-    private void Machine_Placement(PLACE move)
+    statusLable _statusLabel = null;
+    [Export]
+    statusLable statusLabel
     {
-        throw new NotImplementedException();
+        get => _statusLabel; set
+        {
+            _statusLabel = value;
+            gameStatusChanged += _statusLabel.onGameStatusChanged;
+        }
     }
 
-
+    playerLable _playlable = null;
     [Export]
-    TatiHex world;
+    playerLable playlable
+    {
+        get => _playlable; set
+        {
+            _playlable = value;
+            turnChanged += _playlable.onTurnChanged;
+        }
+    }
 
-    //private void ResolveMove(Move move)
-    //{
+    InternalMoveMaker _moveMaker = null;
+    [Export]
+    InternalMoveMaker moveMaker
+    {
+        get => _moveMaker; set
+        {
+            _moveMaker = value;
+            turnChanged += _moveMaker.onTurnChanged;
+        }
+    }
 
-    //}
-
-    //private void ResolveInitialPlace(INITIAL_PLACE move)
-    //{
-    //    if (board == null) return;
-    //}
-    //private void ResolvePlace(PLACE move)
-    //{
-    //    if (board == null) return;
-    //    board.place(new Piece(move.piece, move.player, move.destination));
-    //}
+    ButtonList _debugButtons = null;
+    [Export]
+    ButtonList debugButtons
+    {
+        get => _debugButtons; set
+        {
+            _debugButtons = value;
+            turnChanged += _debugButtons.populate;
+        }
+    }
 
 }
