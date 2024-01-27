@@ -9,10 +9,42 @@ public partial class InternalMoveMaker : Node
     bool midMove = false;
     int currentTurn = -1;
     Hive.Players currentPlayer = Players.BLACK;
-    Nullable<Hive.MoveType> moveType = null;
-    Nullable<Hive.Pieces> selectedPiece = null;
-    Nullable<Cell> destination = null;
-    Nullable<Cell> origin = null;
+    Label moveTypeLabel { get => GetChild<Label>(0); }
+    Label selectedPieceLabel { get => GetChild<Label>(1); }
+    Label destinationLabel { get => GetChild<Label>(2); }
+    Label originLabel { get => GetChild<Label>(3); }
+    Nullable<Hive.MoveType> _moveType = null;
+    Nullable<Hive.MoveType> moveType { get =>_moveType ; set {
+            _moveType = value;
+            moveTypeLabel.Text = $"move type: {moveType.ToString()}";
+        } }
+    Nullable<Hive.Pieces> _selectedPiece = null;
+    Nullable<Hive.Pieces> selectedPiece
+    {
+        get => _selectedPiece; set
+        {
+            _selectedPiece = value;
+            selectedPieceLabel.Text = $"piece type: {selectedPiece.ToString()}";
+        }
+    }
+    Nullable<Cell> _destination = null;
+    Nullable<Cell> destination
+    {
+        get => _destination; set
+        {
+            _destination = value;
+            destinationLabel.Text = $"dest: {destination.ToString()}";
+        }
+    }
+    Nullable<Cell> _origin = null;
+    Nullable<Cell> origin
+    {
+        get => _origin; set
+        {
+            _origin = value;
+            originLabel.Text = $"origin: {origin.ToString()}";
+        }
+    }
     [Signal]
     public delegate void MoveCompletedEventHandler(Hive.Move move);
     void resetMove()
@@ -22,25 +54,34 @@ public partial class InternalMoveMaker : Node
         destination = null;
         origin = null;
     }
+    public override void _Ready()
+    {
+        gridMoveListener gridList = GetChild<gridMoveListener>(4);
+        gridList.BoardPieceClicked += onBoardPieceSelected;
+        gridList.TileClicked += onTileClicked;
+    }
     public void onInventoryPieceSelected(int _piece) {
         GD.Print("INV SEL ", _piece);
         Hive.Pieces piece = (Hive.Pieces)_piece;
         if (midMove && (moveType != Hive.MoveType.PLACE || moveType != Hive.MoveType.INITIAL_PLACE)) resetMove();
+        midMove = true;
         if (currentTurn < 2) moveType = Hive.MoveType.INITIAL_PLACE;
         else moveType = Hive.MoveType.PLACE;    
         selectedPiece = piece;
     }
     //signal issues on next method
-    void onBoardPieceSelected(Piece piece) {
+    public void onBoardPieceSelected(Vector3 _origin, int pieceType) {
         if (midMove && moveType != Hive.MoveType.PLACE) resetMove();
+        midMove = true;
         moveType = Hive.MoveType.MOVE_PIECE;
-        selectedPiece = piece.type;
-        origin = piece.location;
+        selectedPiece = (Hive.Pieces)pieceType;
+        origin = HiveUtils.vec2cel(_origin);
     }
-    void onTileClicked(Cell _destination)
+    public void onTileClicked(Vector3 _destination)
     {
-        if (!midMove || !moveType.HasValue) return;
-        destination = _destination;
+        Cell dest = HiveUtils.vec2cel(_destination);
+        if (!midMove || !moveType.HasValue) { resetMove(); return; }
+        destination = dest;
         moveCompleted();
     }
     public void onTurnChanged(int player)
@@ -69,6 +110,6 @@ public partial class InternalMoveMaker : Node
             default:
                 break;
         }
-        resetMove();
+        //resetMove();
     }
 }
