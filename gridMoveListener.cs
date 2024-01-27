@@ -14,20 +14,16 @@ public partial class gridMoveListener : Node2D
 	public TatiHex grid = null;
     [Export]
 	public BoardNode board = null;
-    [Export]
-    public Color ColorBase { get; set; } = Colors.Yellow;
-    [Export]
-    public Machine machine = null;
+    //[Export]
+    //public Color ColorBase { get; set; } = Colors.Yellow;
+    //[Export]
+    //public Machine machine = null;
     [Signal]
     public delegate void TileClickedEventHandler(Vector3 cell);
     [Signal]
     public delegate void BoardPieceClickedEventHandler(Vector3 origin, int pieceType);
-    public override void _Ready()
-    {
-    }
     public override void _UnhandledInput(InputEvent @event)
     {
-        //if (grid == null || board == null) return;
 
         if (@event is InputEventMouseButton && ((InputEventMouseButton)@event).Pressed)
         {
