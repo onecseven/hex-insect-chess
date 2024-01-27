@@ -44,8 +44,8 @@ public partial class Machine : Node
         EmitSignal(nameof(turnChanged), (int)_turn);
     }
 
-    #endregion
     public void send_move(Move move)
+    #endregion
     {
         if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
         {
