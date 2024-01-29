@@ -47,6 +47,7 @@ public partial class Machine : Node
         {
             _moveMaker = value;
             turnChanged += _moveMaker.onTurnChanged;
+            _moveMaker.MoveCompleted += this.send_move;
         }
     }
 
@@ -58,6 +59,7 @@ public partial class Machine : Node
         {
             _debugButtons = value;
             turnChanged += _debugButtons.populate;
+            
         }
     }
 
