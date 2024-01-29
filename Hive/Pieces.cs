@@ -203,9 +203,6 @@ namespace Hive
         {
             excluded.Add(origin);
             var adj = board.hypotheticalAdjacentLegalCells(origin, excluded.ToList()).Where(item => !excluded.Contains(item)); ;
-            GD.Print("Origin ", origin);
-            HiveUtils.Unroll("excluded", excluded);
-            HiveUtils.Unroll("findall adj", adj);
             if (adj.All(item => excluded.Contains(item))) return excluded;
             foreach(var p in adj)
             {

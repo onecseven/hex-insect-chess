@@ -31,11 +31,9 @@ public partial class gridMoveListener : Node2D
             if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
             {
               if (!board.tileIsOccupied(lic)) {
-                    GD.Print("no piece found", lic);
                 EmitSignal(nameof(TileClicked), new Vector3(lic.x, lic.y, lic.z));
               } else {
                 var piece = board.piecesInPlay[lic];
-                    GD.Print("iece fournd ", piece.type);
                 EmitSignal(nameof(BoardPieceClicked), new Vector3(piece.location.x, piece.location.y, piece.location.z), (int)piece.type);
               }
             }

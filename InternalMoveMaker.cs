@@ -61,7 +61,6 @@ public partial class InternalMoveMaker : Node
         gridList.TileClicked += onTileClicked;
     }
     public void onInventoryPieceSelected(int _piece) {
-        GD.Print("INV SEL ", _piece);
         Hive.Pieces piece = (Hive.Pieces)_piece;
         if (midMove && (moveType != Hive.MoveType.PLACE || moveType != Hive.MoveType.INITIAL_PLACE)) resetMove();
         midMove = true;
