@@ -147,14 +147,15 @@ public partial class Machine : Node
     bool checkIfPlayerTurn(Move move) => move.player == turn;
     bool moveIsLegal(Hive.MOVE_PIECE move)
     {
-        if (!board.piecesInPlay.ContainsKey(move.origin)) return false; 
+        if (!board.piecesInPlay.ContainsKey(move.origin)) return false;
         Piece piece = board.piecesInPlay[move.origin];
         List<Path> paths = Piece.getLegalMoves(piece, board);
         Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
         List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
+        bool correctPlayer = piece.owner == turn; 
         GD.Print("Legal paths contain destination: ", endpoints.Contains(move.destination));
         GD.Print("Player path is legal: ", pathIsLegal(playerPath));
-        if (endpoints.Contains(move.destination) && pathIsLegal(playerPath)) return true;
+        if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath)) return true;
         else return false;
     }
     bool pathIsLegal(Path path)
