@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Xml.Serialization;
 
 public partial class Machine : Node
@@ -80,6 +81,10 @@ public partial class Machine : Node
 
     public void autopassCheck()
     {
+        GD.Print("PlayerHasPieces: ", playerHasPieces(turn));
+        GD.Print("HasLegalPlacementTarget: ", hasLegalPlacementTarget(turn));
+        GD.Print("PlayerHasPossibleMoves: ", playerHasPossibleMoves(turn));
+
         if ((playerHasPieces(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
         else
         {
@@ -194,9 +199,12 @@ public partial class Machine : Node
 
         bool hasPlayedBee = hasPlayerPlayedBee(player);
         bool hasPlayedThreeMoves = (moves.Where(move => move.player == player).ToList().Count) == 3;
-        bool belowLimit = (moves.Where(move => move.player == player).ToList().Count) > 3;
+        bool belowLimit = (moves.Where(move => move.player == player).ToList().Count) < 3;
         if (belowLimit && hasPlayedThreeMoves && !hasPlayedBee) return true;
-        else if (!belowLimit && !hasPlayedThreeMoves && !hasPlayedBee) throw new ArgumentException("illegal game state");
+        else if (!belowLimit && !hasPlayedThreeMoves && !hasPlayedBee)
+        {
+            throw new ArgumentException("illegal game state");
+        }
         return false;
     }
     bool hasPlayerWon(Hive.Players player)
@@ -213,6 +221,7 @@ public partial class Machine : Node
     //only look into this if piece has no moves available
     bool hasLegalPlacementTarget (Hive.Players player)
     {
+        if (moves.Count < 2) return true;
         List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
         foreach (Piece item in playerPieces)
         {
