@@ -7,7 +7,7 @@ public partial class statusLable : Label
 
     public void onGameStatusChanged(string phase)
     {
-        GD.Print(phase);
+        //GD.Print(phase);
         this.Text = $"Phase: {phase}";
     }
     public override void _Ready()

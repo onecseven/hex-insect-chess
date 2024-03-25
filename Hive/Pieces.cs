@@ -119,7 +119,6 @@ namespace Hive
                     lastStep.ForEach(last => paths.Add(new Path(new List<Cell>() { firstStep, seStep, last })));
                 }
             }
-            HiveUtils.Unroll("Path", paths);
             return paths;
         }
         public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l) { }
@@ -156,7 +155,6 @@ namespace Hive
                     lastStep.ForEach(last => paths.Add(new Path(firstStep, seStep, last)));
                 }
             }
-            HiveUtils.Unroll("Path", paths);
             return paths;
         }
         public Spider(Players p, Cell l) : base(Pieces.SPIDER, p, l) { }
@@ -224,7 +222,6 @@ namespace Hive
             }
             foreach (Cell step in nextSteps)
             {
-                GD.Print("h");
                 result.AddRange(findViablePath(board, step, dest, excluded));
             }
             return result;

@@ -37,16 +37,16 @@ moveMaker = NodePath("InternalMoveMaker")
 debugButtons = NodePath("../../Pieces")
 
 [node name="playerLable" type="Label" parent="Game/Machine"]
-offset_top = 67.0
+offset_top = 57.0
 offset_right = 40.0
-offset_bottom = 90.0
+offset_bottom = 80.0
 script = ExtResource("4_4nsjd")
 
 [node name="statusLable" type="Label" parent="Game/Machine"]
-offset_left = 362.0
-offset_top = 4.0
-offset_right = 402.0
-offset_bottom = 27.0
+offset_left = 3.0
+offset_top = 156.0
+offset_right = 43.0
+offset_bottom = 179.0
 script = ExtResource("5_6jo6o")
 
 [node name="InternalMoveMaker" type="Node" parent="Game/Machine"]

@@ -10,7 +10,7 @@ public partial class playerLable : Label
 
     public void onTurnChanged(int player)
     {
-        GD.Print(player);
+        //GD.Print(player);
         this.Text = $"Players: {(Hive.Players)player}";
     }
     // Called every frame. 'delta' is the elapsed time since the previous frame.

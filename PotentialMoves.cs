@@ -50,7 +50,7 @@ public partial class PotentialMoves : Node2D
         foreach (Path _path in potentialMoves) {
                 if (grid.hexes.TryGetValue(_path.last, out var center))
                 {
-                    GD.Print("potentialmoves draw ", center);
+                    //GD.Print("potentialmoves draw ", center);
                     var super_shapes = grid.GetHexCornersFromCenter(new Vector2(center.X, center.Y));
                     for (int i = 0; i < super_shapes.Length; i++)
                     {
