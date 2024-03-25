@@ -39,6 +39,7 @@ public partial class Machine : Node
     [Signal]
     public delegate void turnChangedEventHandler(int player);
 
+    #endregion
     public override void _Ready()
     {
         EmitSignal(nameof(gameStatusChanged), _game_status.ToString());
@@ -46,7 +47,6 @@ public partial class Machine : Node
     }
 
     public void send_move(Move move)
-    #endregion
     {
         if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
         {
@@ -104,32 +104,34 @@ public partial class Machine : Node
 
     private bool moveIsValid(Move move)
     {
-        GD.Print("turn matches player?: ", move.player == turn);
-        if (move.player != turn) return false;
+        //GD.Print("Must play bee? ", mustPlayBee(move.player));
+        if (move.player != turn || (mustPlayBee(move.player) && (move.piece != Pieces.BEE)))
+        {
+            GD.Print("Must Play Bee?");
+            return false;
+        }
         switch (move.type)
         {
             case MoveType.INITIAL_PLACE:
                 Hive.INITIAL_PLACE initialPlaceCasted = (Hive.INITIAL_PLACE)move;
+                GD.Print("PLACING " + initialPlaceCasted.piece + " ON " + initialPlaceCasted.destination);
+                GD.Print("Is it a bee placement? ", move.type != MoveType.AUTOPASS && move.type != MoveType.MOVE_PIECE && move.piece == Pieces.BEE);
                 GD.Print("Initial Placement Check: ", initialPlacementCheck(initialPlaceCasted));
                 if (!initialPlacementCheck(initialPlaceCasted)) return false;
                 break;
             case MoveType.PLACE:
                 Hive.PLACE placeCasted = (Hive.PLACE)move;
+                GD.Print("PLACING " + placeCasted.piece + " ON " + placeCasted.destination);
                 GD.Print("Placement Check: ", placementLegalityCheck(placeCasted.destination, placeCasted.player));
-                GD.Print("Must User Play Bee?: ", mustPlayBee(placeCasted.player));
-                if (mustPlayBee(placeCasted.player) && move.piece != Pieces.BEE) return false;
                 if (!placementLegalityCheck(placeCasted.destination, placeCasted.player)) return false;
                 break;
             case MoveType.MOVE_PIECE:
                 Hive.MOVE_PIECE moveCasted = (Hive.MOVE_PIECE)move;
+                GD.Print("MOVING " + moveCasted.piece + " FROM " + moveCasted.origin + " TO " + moveCasted.destination);
                 GD.Print("Move Is Legal Check: ", moveIsLegal(moveCasted));
+                GD.Print("One Hive Rule Check: ", oneHiveRuleCheck(moveCasted.origin));
                 if (!moveIsLegal(moveCasted)) return false;
-                GD.Print("OneHiveRuleCheck: ", oneHiveRuleCheck(moveCasted.origin));
-                if (!oneHiveRuleCheck(moveCasted.origin))
-                {
-                    return false;
-                }
-
+                if (!oneHiveRuleCheck(moveCasted.origin)) return false;
                 break;
             default:
                 break;
@@ -152,14 +154,17 @@ public partial class Machine : Node
         List<Path> paths = Piece.getLegalMoves(piece, board);
         Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
         List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
-        bool correctPlayer = piece.owner == turn; 
+        bool correctPlayer = piece.owner == turn;
+        GD.Print("Did the correct player submit the move? ", correctPlayer);
         GD.Print("Legal paths contain destination: ", endpoints.Contains(move.destination));
-        GD.Print("Player path is legal: ", pathIsLegal(playerPath));
-        if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath)) return true;
+        GD.Print("Player path is legal: ", pathIsLegal(playerPath, piece.type));
+        if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
         else return false;
     }
-    bool pathIsLegal(Path path)
+    bool pathIsLegal(Path path, Pieces pieceType)
     {
+        //if there's a bug with grasshoppers it's probably this
+        if (pieceType == Pieces.GRASSHOPPER) return true;
         foreach ((Cell first, Cell last)  in path.pairs)
         {
             if (!board.CanMoveBetween(first, last)) return false; 
@@ -191,17 +196,12 @@ public partial class Machine : Node
     }
     bool mustPlayBee(Hive.Players player)
     {
-        bool hasPlayerPlayedBee(Hive.Players player)
-        {
-            var playerMoves = moves.Where(move => move.player == player).Where(move => move.type == MoveType.INITIAL_PLACE || move.type == MoveType.PLACE);
-            if (moves.Any(move => move.piece == Pieces.BEE)) return true;
-            return false;
-        }
-
-        bool hasPlayedBee = hasPlayerPlayedBee(player);
+        bool hasPlayedBee = moves.Where(move => move.player == player).Where(move => move.type == MoveType.INITIAL_PLACE || move.type == MoveType.PLACE).Any(move => move.piece == Pieces.BEE);
         bool hasPlayedThreeMoves = (moves.Where(move => move.player == player).ToList().Count) == 3;
         bool belowLimit = (moves.Where(move => move.player == player).ToList().Count) < 3;
-        if (belowLimit && hasPlayedThreeMoves && !hasPlayedBee) return true;
+        //GD.Print("hasPlayedBee ", hasPlayedBee);
+        //GD.Print("hasPlayedThreeMoves " + hasPlayedThreeMoves + " " + moves.Where(move => move.player == player).ToList().Count);
+        if (hasPlayedThreeMoves && !hasPlayedBee) return true;
         else if (!belowLimit && !hasPlayedThreeMoves && !hasPlayedBee)
         {
             throw new ArgumentException("illegal game state");
@@ -242,7 +242,6 @@ public partial class Machine : Node
         if (possibleMoves.Count == 0 || possibleMoves.All(path => path.isNullPath)) return false;
         else return true;
     }
-
     private HashSet<Cell> recursiveGetNeighbors(Cell cell, HashSet<Cell> memo, Cell? excludedCell)
     {
         List<Cell> neighbors = board.getOccupiedNeighbors(cell);
@@ -270,7 +269,6 @@ public partial class Machine : Node
         return true;
     }
     #endregion
-
     #endregion
     public bool wincon_check()
     {
