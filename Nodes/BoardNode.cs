@@ -15,16 +15,14 @@ public partial class BoardNode : Node2D
 
     public Player getInventory(Hive.Players player) => player == Players.WHITE ? whitePlayer : blackPlayer;
     public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() {
-        [new Cell(5, 4, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 4,-9)),
-        [new Cell(5 ,5, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 5, -10)),
-        [new Cell(6, 4, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(6, 4, -10)),
-        [new Cell(4, 6, -10)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4, 6, -10)),
-        [new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4, 5, -9)),
-        [new Cell(5, 6, -11)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(5, 6, -11)),
-        [new Cell(6, 5, -11)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(6, 5, -11)),
-        [new Cell(7, 3, -10)] = Piece.create(Pieces.LADYBUG, Players.BLACK, new Cell(7, 3, -10)),
-        [new Cell(6, 6, -12)] = Piece.create(Pieces.GRASSHOPPER, Players.BLACK, new Cell(6, 6, -12)),
-    };
+        [new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4,5, -9)),
+        [new Cell(5, 5, -10)] = Piece.create(Pieces.ANT, Players.BLACK, new Cell(5, 5, -10)),
+        [new Cell(3, 6, -9)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(3, 6, -9)),
+        [new Cell(4, 6, -10)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 6, -10)),
+        [new Cell(4, 7, -11)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 7, -11)),
+        [new Cell(4, 8, -12)] = Piece.create(Pieces.BEE, Players.WHITE, new Cell(4, 8, -12)),
+        [new Cell(4, 9, -13)] = Piece.create(Pieces.GRASSHOPPER, Players.WHITE, new Cell(4, 9, -13)),
+    };  
     public void place(PLACE move)
     {
         Player pieceOwner = move.player == Hive.Players.BLACK ? blackPlayer : whitePlayer;
