@@ -81,11 +81,11 @@ public partial class Machine : Node
 
     public void autopassCheck()
     {
-        GD.Print("PlayerHasPieces: ", playerHasPieces(turn));
+        GD.Print("PlayerHasPieces: ", playerHasPiecesInPlay(turn));
         GD.Print("HasLegalPlacementTarget: ", hasLegalPlacementTarget(turn));
         GD.Print("PlayerHasPossibleMoves: ", playerHasPossibleMoves(turn));
 
-        if ((playerHasPieces(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
+        if ((playerHasPiecesInPlay(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
         else
         {
             if (moves.Last().type == MoveType.AUTOPASS)
@@ -114,22 +114,26 @@ public partial class Machine : Node
         {
             case MoveType.INITIAL_PLACE:
                 Hive.INITIAL_PLACE initialPlaceCasted = (Hive.INITIAL_PLACE)move;
-                GD.Print("PLACING " + initialPlaceCasted.piece + " ON " + initialPlaceCasted.destination);
+                GD.Print("\n" + move.player + "INITIAL PLACING " + initialPlaceCasted.piece + " ON " + initialPlaceCasted.destination);
+                bool iPlaceCheck = initialPlacementCheck(initialPlaceCasted);
                 GD.Print("Is it a bee placement? ", move.type != MoveType.AUTOPASS && move.type != MoveType.MOVE_PIECE && move.piece == Pieces.BEE);
-                GD.Print("Initial Placement Check: ", initialPlacementCheck(initialPlaceCasted));
-                if (!initialPlacementCheck(initialPlaceCasted)) return false;
+                GD.Print("Initial Placement Check: ", iPlaceCheck);
+                if (!iPlaceCheck) return false;
                 break;
             case MoveType.PLACE:
                 Hive.PLACE placeCasted = (Hive.PLACE)move;
-                GD.Print("PLACING " + placeCasted.piece + " ON " + placeCasted.destination);
-                GD.Print("Placement Check: ", placementLegalityCheck(placeCasted.destination, placeCasted.player));
-                if (!placementLegalityCheck(placeCasted.destination, placeCasted.player)) return false;
+                GD.Print("\n" + move.player + " PLACING " + placeCasted.piece + " ON " + placeCasted.destination);
+                bool placeCheck = placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece);
+                GD.Print("Placement Check: ", placeCheck);
+                if (!placeCheck) return false;
                 break;
             case MoveType.MOVE_PIECE:
                 Hive.MOVE_PIECE moveCasted = (Hive.MOVE_PIECE)move;
-                GD.Print("MOVING " + moveCasted.piece + " FROM " + moveCasted.origin + " TO " + moveCasted.destination);
-                GD.Print("Move Is Legal Check: ", moveIsLegal(moveCasted));
-                GD.Print("One Hive Rule Check: ", oneHiveRuleCheck(moveCasted.origin));
+                GD.Print("\n" + move.player + " MOVING " + moveCasted.piece + " FROM " + moveCasted.origin + " TO " + moveCasted.destination);
+                bool moveCheck = moveIsLegal(moveCasted);
+                bool hiveRuleCheck = oneHiveRuleCheck(moveCasted.origin);
+                GD.Print("Move Is Legal Check: ", moveCheck);
+                GD.Print("One Hive Rule Check: ", hiveRuleCheck);
                 if (!moveIsLegal(moveCasted)) return false;
                 if (!oneHiveRuleCheck(moveCasted.origin)) return false;
                 break;
@@ -146,6 +150,12 @@ public partial class Machine : Node
      * 1. turn label component.
      * 2. move history?
      */
+
+    bool checkIfPlayerHasPieceInInventory(Players player, Hive.Pieces piece)
+    {
+        Player pieceOwner = player == Hive.Players.BLACK ? _board.blackPlayer : _board.whitePlayer;
+        return pieceOwner.hasPiece(piece);
+    }
     bool checkIfPlayerTurn(Move move) => move.player == turn;
     bool moveIsLegal(Hive.MOVE_PIECE move)
     {
@@ -171,14 +181,16 @@ public partial class Machine : Node
         }
         return true;
     }
-    bool placementLegalityCheck(Cell destination, Hive.Players player)
+    bool placementLegalityCheck(Cell destination, Hive.Players player, Pieces piece)
     {
         List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(destination);
         List<Piece> actualPieces = surroundingPieces.Select(cel => board.piecesInPlay[cel]).ToList();
         bool piecesBelongToMover = actualPieces.All(pieces => player == pieces.owner);
-        GD.Print("Player has pieces?: ", actualPieces.Count > 0);
-        GD.Print("Pieces belong to mover?: ", piecesBelongToMover);
-        if (actualPieces.Count > 0 && piecesBelongToMover) return true;
+        bool playerHasPieceInHand = checkIfPlayerHasPieceInInventory(player, piece);
+        GD.Print("Player has pieces to connect: ", actualPieces.Count > 0);
+        GD.Print("Pieces belong to mover: ", piecesBelongToMover);
+        GD.Print("Player has piece " + piece + " in inventory: ", playerHasPieceInHand);
+        if (actualPieces.Count > 0 && piecesBelongToMover && playerHasPieceInHand) return true;
         return false;
     }
     bool initialPlacementCheck(Hive.INITIAL_PLACE move)
@@ -188,8 +200,8 @@ public partial class Machine : Node
         {
             bool isCorrectUser = moves[0].player != move.player;
             bool isAdjacentToFirstPiece = board.AreCellsAdjacent(((Hive.INITIAL_PLACE)moves[0]).destination, move.destination);
-            GD.Print("Correct player?: ", isCorrectUser);
-            GD.Print("is initial placement adjacent to first piece?", isAdjacentToFirstPiece);
+            GD.Print("Correct player: ", isCorrectUser);
+            GD.Print("Initial placement adjacent to first piece:", isAdjacentToFirstPiece);
             if (isCorrectUser && isAdjacentToFirstPiece) return true;
         }
         return false;
@@ -227,11 +239,11 @@ public partial class Machine : Node
         foreach (Piece item in playerPieces)
         {
             List<Cell> neighbors = board.getEmptyNeighbors(item.location);
-            if (neighbors.Any(neigh => placementLegalityCheck(neigh, player))) return true;
+            if (neighbors.Any(neigh => placementLegalityCheck(neigh, player, item.type))) return true;
         }
         return false;
     }
-    bool playerHasPieces(Hive.Players player) => board.piecesInPlay.Where(kvp => kvp.Value.owner == player).ToList().Count < 13;
+    bool playerHasPiecesInPlay(Hive.Players player) => board.piecesInPlay.Where(kvp => kvp.Value.owner == player).ToList().Count < 13;
     bool playerHasPossibleMoves(Hive.Players player)
     {
         List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
