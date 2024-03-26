@@ -26,7 +26,7 @@ public partial class Player : GodotObject
         if (hasPiece(_piece)) inventory[_piece]--;
         else throw new ArgumentOutOfRangeException("piece placed called when player is out of pieces");
       }
-    public bool hasPiece(Hive.Pieces _piece) => inventory.ContainsKey(_piece);
+    public bool hasPiece(Hive.Pieces _piece) => inventory.ContainsKey(_piece) && inventory[_piece] > 0;
 
 
 }
