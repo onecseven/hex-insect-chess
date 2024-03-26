@@ -10,18 +10,18 @@ public partial class BoardNode : Node2D
     private readonly Cell nullCell = new Cell(-12, -12, -12);
     [Export]
     public TatiHex grid = null;
-    private Player whitePlayer = new Player(Players.WHITE);
-    private Player blackPlayer = new Player(Players.BLACK);
+    public Player whitePlayer = new Player(Players.WHITE);
+    public Player blackPlayer = new Player(Players.BLACK);
 
     public Player getInventory(Hive.Players player) => player == Players.WHITE ? whitePlayer : blackPlayer;
     public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() {
-        [new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4,5, -9)),
-        [new Cell(5, 5, -10)] = Piece.create(Pieces.ANT, Players.BLACK, new Cell(5, 5, -10)),
-        [new Cell(3, 6, -9)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(3, 6, -9)),
-        [new Cell(4, 6, -10)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 6, -10)),
-        [new Cell(4, 7, -11)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 7, -11)),
-        [new Cell(4, 8, -12)] = Piece.create(Pieces.BEE, Players.WHITE, new Cell(4, 8, -12)),
-        [new Cell(4, 9, -13)] = Piece.create(Pieces.GRASSHOPPER, Players.WHITE, new Cell(4, 9, -13)),
+        //[new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4,5, -9)),
+        //[new Cell(5, 5, -10)] = Piece.create(Pieces.ANT, Players.BLACK, new Cell(5, 5, -10)),
+        //[new Cell(3, 6, -9)] = Piece.create(Pieces.SPIDER, Players.BLACK, new Cell(3, 6, -9)),
+        //[new Cell(4, 6, -10)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 6, -10)),
+        //[new Cell(4, 7, -11)] = Piece.create(Pieces.MOSQUITO, Players.WHITE, new Cell(4, 7, -11)),
+        //[new Cell(4, 8, -12)] = Piece.create(Pieces.BEE, Players.WHITE, new Cell(4, 8, -12)),
+        //[new Cell(4, 9, -13)] = Piece.create(Pieces.GRASSHOPPER, Players.WHITE, new Cell(4, 9, -13)),
     };  
     public void place(PLACE move)
     {
