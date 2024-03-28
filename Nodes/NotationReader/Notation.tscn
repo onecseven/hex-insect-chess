@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dusfk5jo8406v"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TextEdit" type="TextEdit" parent="."]
+offset_right = 238.0
+offset_bottom = 386.0
+placeholder_text = "Paste the moves list here"
+wrap_mode = 1
+autowrap_mode = 1

@@ -234,7 +234,7 @@ public partial class Machine : Node
     //only look into this if piece has no moves available
     bool hasLegalPlacementTarget (Hive.Players player)
     {
-        if (moves.Count < 2) return true;
+        if (moves.Count <= 2) return true;
         List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
         foreach (Piece item in playerPieces)
         {
