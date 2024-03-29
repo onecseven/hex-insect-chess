@@ -6,6 +6,8 @@ using System.Linq;
 using Godot;
 using System.Runtime.ExceptionServices;
 using Godot.NativeInterop;
+using System.Diagnostics.SymbolStore;
+using System.Reflection.Metadata.Ecma335;
 
 public class NotationReader
 {
@@ -14,15 +16,33 @@ public class NotationReader
         public Hive.Players playerMarker;
         public Hive.Pieces pieceMarker;
         public int numMarker = 0;
+        override public string ToString() => $"playerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
     }
 
-    public class Objet 
+    public class NullObjet : Objet
+    {
+        override public string ToString() => $"null";
+
+    }
+
+    public class Objet
     {
         public Sylves.FTHexCorner positionalMarker;
         public Hive.Players playerMarker;
         public Hive.Pieces pieceMarker;
         public int numMarker = 0;
+        override public string ToString() => $"positionalMarker: {positionalMarker}\nplayerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
     }
+
+    public static Dictionary<string, Hive.Pieces> pieceDict = new Dictionary<string, Hive.Pieces>() {
+        ["S"] = Hive.Pieces.SPIDER,
+        ["A"] = Hive.Pieces.ANT,
+        ["Q"] = Hive.Pieces.BEE,
+        ["B"] = Hive.Pieces.BEETLE,
+        ["M"] = Hive.Pieces.MOSQUITO,
+        ["L"] = Hive.Pieces.LADYBUG,
+        ["G"] = Hive.Pieces.GRASSHOPPER,
+    };
 
     public static Regex moveListPattern = new Regex(@"(([\/\\-])?([wb]{1}){1}([SAQBMLGP]{1})([123]{1})?([\/\\-])?|[\.])");
     public static Regex positionalParticle= new Regex(@"([\/\\-])");
@@ -83,36 +103,70 @@ public class NotationReader
         else if (int.TryParse(designator, out int id))
         {
             var moves = basicSplit[1].Split(" ").ToList<string>().Where(str => str.Count() > 0).ToList();
+            GD.Print(moves[0], moves[1]);
             return moves;
         }
         return new List<string>();
     }
 
-    //public static Objet ParseObjet(string obj)
-    //{
-    //    foreach (var token in obj)
-    //    {
-
-    //    }
-    //}
-    public static Subject ParseSubject(string subj)
+    public static FTHexCorner parseDirection(bool isLeft, string line)
     {
-        var subject = new Subject();
-        foreach (var token in subj)
+        switch (line)
         {
-            switch (token)
-            {
-                case (NotationReader.playerMark.Match(token).Success):
-                    {
-
-                    }
-            }
+            case "-":
+                if (isLeft) return FTHexCorner.Left;
+                else return FTHexCorner.Right;
+            case "/":
+                if (isLeft) return FTHexCorner.UpLeft;
+                else return FTHexCorner.UpRight;
+            case "\\":
+                if (isLeft) return FTHexCorner.DownLeft;
+                else return FTHexCorner.DownRight;
+            default:
+                throw new Exception("POSITION FUCKED UP");
         }
     }
-    public static List<(Objet, Subject)> ParseMove(string move)
-    {
 
+    public static Objet ParseObjet(string obj)
+    {
+        if (obj == ".") return new NullObjet();
+        Subject basse = ParseSubject(obj);
+        Objet objet = new Objet() {
+            numMarker = basse.numMarker,
+            pieceMarker = basse.pieceMarker,
+            playerMarker = basse.playerMarker,
+        };
+        string first = obj.First().ToString();
+        string last = obj.Last().ToString();
+        FTHexCorner position;
+        if (positionalParticle.IsMatch(first)) {
+            objet.positionalMarker = parseDirection(true, first);
+        } else if (positionalParticle.IsMatch(last))
+        {
+            objet.positionalMarker = parseDirection(false, last);
+        }
+        return objet;
+    }
+    public static Subject ParseSubject(string subj)
+    {
+        var subject = new Subject() {
+            numMarker = 0,
+        };
+        foreach (var token in subj)
+        {
+            if (playerMark.IsMatch(token.ToString())) { subject.playerMarker = token == 'w' ? Hive.Players.WHITE : Hive.Players.BLACK; }
+            if (pieceParticle.IsMatch(token.ToString())) { subject.pieceMarker = pieceDict[token.ToString()]; }
+        }
+        if (numberSpecifierParticle.IsMatch(subj))
+        {
+            subject.numMarker = int.Parse(numberSpecifierParticle.Match(subj).Value[1].ToString());
+        };
+        return subject;
+    }
+    public static (Subject, Objet) ParseMove(List<string> tokenized)
+    {
+        return (ParseSubject(tokenized[0]), ParseObjet(tokenized[1]));
     }
 
-    
+    public static List<(Subject, Objet)> Parser (List<List<string>> moves) => moves.Select(ParseMove).ToList();
 }

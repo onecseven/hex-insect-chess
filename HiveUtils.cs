@@ -26,13 +26,10 @@ public class HiveUtils
         List<string> propertyList = new List<string>();
         GD.Print("===============");
         GD.Print(name);
-        if (pObject != null)
-        {
             foreach (var prop in pObject.GetType().GetProperties())
             {
                 GD.Print(prop.Name, prop.GetValue(pObject).ToString());
             }
-        }
         GD.Print("================");
     }
     public static void Unroll<T>(string title, IEnumerable<T> obj)

@@ -14,6 +14,7 @@ public partial class TextEdit : Godot.TextEdit
 		if (NotationReader.IsValidMoveList(Text))
 		{
 			var tokenized = NotationReader.Tokenize(Text);
+			var parsed = NotationReader.Parser(tokenized);
         }
 	}
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
