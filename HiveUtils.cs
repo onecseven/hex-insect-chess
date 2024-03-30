@@ -42,6 +42,15 @@ public class HiveUtils
         GD.Print("===");
     }
 
+    public static Dictionary<FTHexCorner, Cell> corners = new Dictionary<FTHexCorner, Cell>() {
+        [FTHexCorner.Right] = new Cell(+1, 0, -1),
+        [FTHexCorner.UpRight] = new Cell(+1,-1,0),
+        [FTHexCorner.DownRight] = new Cell(0, +1, -1),
+        [FTHexCorner.Left] = new Cell(-1, 0, +1),
+        [FTHexCorner.UpLeft] = new Cell(0, -1, +1),
+        [FTHexCorner.DownLeft] = new Cell(-1, +1, 0),
+    };
+
     public static Cell[] directions = new Cell[6] {
             new Cell(+1, 0, -1), new Cell(+1, -1, 0), new Cell(0, -1, +1),
             new Cell(-1, 0, +1), new Cell(-1, +1, 0), new Cell(0, +1, -1),
