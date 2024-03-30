@@ -2,9 +2,7 @@
 
 [ext_resource type="Script" path="res://Nodes/NotationReader/TextEdit.cs" id="1_x15m1"]
 
-[node name="Node2D" type="Node2D"]
-
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="TextEdit" type="TextEdit"]
 offset_right = 249.0
 offset_bottom = 386.0
 placeholder_text = "Paste the moves list here"
@@ -12,4 +10,4 @@ wrap_mode = 1
 autowrap_mode = 1
 script = ExtResource("1_x15m1")
 
-[connection signal="text_changed" from="TextEdit" to="TextEdit" method="_on_text_changed"]
+[connection signal="text_changed" from="." to="." method="_on_text_changed"]
