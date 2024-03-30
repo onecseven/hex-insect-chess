@@ -4,10 +4,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using System.Runtime.ExceptionServices;
-using Godot.NativeInterop;
-using System.Diagnostics.SymbolStore;
-using System.Reflection.Metadata.Ecma335;
+using static NotationReader;
 
 public class NotationReader
 {
@@ -17,22 +14,58 @@ public class NotationReader
         public Hive.Pieces pieceMarker;
         public int numMarker = 0;
         override public string ToString() => $"playerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
+        public string ToNotation()
+        {
+            string result = "";
+            if (playerMarker == Hive.Players.BLACK) result += "b";
+            else result += "w";
+            result += pieceDict.Where<KeyValuePair<string, Hive.Pieces>>(kvp => kvp.Value == pieceMarker).First().Key;
+            if (numMarker != 0) result += numMarker.ToString();
+            return result;
+        }
+    }
+
+
+    public class Objet : Subject
+    {
+        public Sylves.FTHexCorner positionalMarker;
+        override public string ToString() => $"positionalMarker: {positionalMarker}\nplayerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
+        public new string ToNotation()
+        {
+            Subject basse = new Subject()
+            {
+                playerMarker = this.playerMarker,
+                pieceMarker = this.pieceMarker,
+                numMarker = this.numMarker
+            };
+            string basseStr = basse.ToNotation();
+            switch (positionalMarker)
+            {
+                case FTHexCorner.Right:
+                    return basseStr+"-";
+                case FTHexCorner.UpRight:
+                    return basseStr + "/";
+                case FTHexCorner.UpLeft:
+                    return "/" + basseStr;
+                case FTHexCorner.Left:
+                    return "-" + basseStr;
+                case FTHexCorner.DownLeft:
+                    return "\\" + basseStr;
+                case FTHexCorner.DownRight:
+                    return basseStr+"\\";
+            }
+            throw new Exception("wtf kind of notation request was that");
+        }
+
+
     }
 
     public class NullObjet : Objet
     {
         override public string ToString() => $"null";
-
+        public new string ToNotation() => ".";
     }
 
-    public class Objet
-    {
-        public Sylves.FTHexCorner positionalMarker;
-        public Hive.Players playerMarker;
-        public Hive.Pieces pieceMarker;
-        public int numMarker = 0;
-        override public string ToString() => $"positionalMarker: {positionalMarker}\nplayerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
-    }
 
     public static Dictionary<string, Hive.Pieces> pieceDict = new Dictionary<string, Hive.Pieces>() {
         ["S"] = Hive.Pieces.SPIDER,
@@ -44,12 +77,13 @@ public class NotationReader
         ["G"] = Hive.Pieces.GRASSHOPPER,
     };
 
+    #region regex
     public static Regex moveListPattern = new Regex(@"(([\/\\-])?([wb]{1}){1}([SAQBMLGP]{1})([123]{1})?([\/\\-])?|[\.])");
     public static Regex positionalParticle= new Regex(@"([\/\\-])");
     public static Regex playerMark = new Regex(@"([wb]{1}){1}");
     public static Regex pieceParticle = new Regex(@"([SAQBMLGP]{1})");
     public static Regex numberSpecifierParticle = new Regex(@"(?:[SAQBMLGP]{1})([123]{1})");
-
+    #endregion
     public static bool IsValidMoveList(string moveList)
     {
         List<string> lines = moveList.Split("\n").ToList<string>().Where(str => str.Count() > 0).ToList();
@@ -60,7 +94,8 @@ public class NotationReader
         GD.Print("Move list validated.");
         return true;
     }
-    public static bool IsValidMoveListToken(string line)
+    #region validator helpers
+    private static bool IsValidMoveListToken(string line)
     {
         var a = line.Split(":").ToList();
         if (a.Count < 1) return false;
@@ -74,7 +109,7 @@ public class NotationReader
         }
         return true;
     }
-    public static bool isValidMove(List<string> moves)
+    private static bool isValidMove(List<string> moves)
     {
         if (moves.Count != 2) return false; //redundant but you never know
         string subject = moves[0];
@@ -83,7 +118,9 @@ public class NotationReader
         GD.Print("Invalid move");
         return false;
     }
+    #endregion
 
+    #region tokenizer
     public static List<List<string>> Tokenize(string moveList) {
         List<string> lines = moveList.Split("\n").ToList<string>().Where(str => str.Count() > 0).ToList();
         List<List<string>> tokenized = new List<List<string>>();
@@ -93,8 +130,8 @@ public class NotationReader
         }
         return tokenized;
     }
-
-    public static List<string> TokenizeMove(string move)
+    #endregion
+    private static List<string> TokenizeMove(string move)
     {
         var basicSplit = move.Split(":").ToList();
         if (basicSplit.Count < 1) throw new Exception("weird move crashed tokenizemove");
@@ -103,13 +140,14 @@ public class NotationReader
         else if (int.TryParse(designator, out int id))
         {
             var moves = basicSplit[1].Split(" ").ToList<string>().Where(str => str.Count() > 0).ToList();
-            GD.Print(moves[0], moves[1]);
+            //GD.Print(moves[0], moves[1]);
             return moves;
         }
         return new List<string>();
     }
 
-    public static FTHexCorner parseDirection(bool isLeft, string line)
+    #region parsing helpers
+    private static FTHexCorner parseDirection(bool isLeft, string line)
     {
         switch (line)
         {
@@ -126,8 +164,7 @@ public class NotationReader
                 throw new Exception("POSITION FUCKED UP");
         }
     }
-
-    public static Objet ParseObjet(string obj)
+    private static Objet ParseObjet(string obj)
     {
         if (obj == ".") return new NullObjet();
         Subject basse = ParseSubject(obj);
@@ -147,7 +184,7 @@ public class NotationReader
         }
         return objet;
     }
-    public static Subject ParseSubject(string subj)
+    private static Subject ParseSubject(string subj)
     {
         var subject = new Subject() {
             numMarker = 0,
@@ -161,12 +198,32 @@ public class NotationReader
         {
             subject.numMarker = int.Parse(numberSpecifierParticle.Match(subj).Value[1].ToString());
         };
+        //GD.Print("Original: ", subj, "\nParsed: ", subject.ToNotation(), "\n");
         return subject;
     }
-    public static (Subject, Objet) ParseMove(List<string> tokenized)
+    private static (Subject, Objet) ParseMove(List<string> tokenized)
     {
+        GD.Print("Original: ", String.Join(" ", tokenized));
+        GD.Print("Notationed: ", ParseSubject(tokenized[0]).ToNotation(), " ", ParseObjet(tokenized[1]).ToNotation());
         return (ParseSubject(tokenized[0]), ParseObjet(tokenized[1]));
     }
-
+    #endregion
     public static List<(Subject, Objet)> Parser (List<List<string>> moves) => moves.Select(ParseMove).ToList();
+
+    public static /*List<Hive.Move>*/ void Translator(List<(Subject, Objet)> moves)
+    {
+        //TODO
+        //1. if subject isn't in seen, the move is place (or initial place depending on the hashset count)
+            //1A. if its the first place, decide on a center tile to put it on
+            //1B. use HiveUtils.Corners to figure out where to put the guy
+        //2. if subject is in seen, the move is MOVE
+
+        HashSet<string> seen = new HashSet<string>();
+        Dictionary<string, Cell> pieceTracker = new Dictionary<string, Cell>();
+        foreach (var move in moves)
+        {
+
+        }
+        return;
+    }
 }
