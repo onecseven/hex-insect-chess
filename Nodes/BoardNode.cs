@@ -12,7 +12,6 @@ public partial class BoardNode : Node2D
     public TatiHex grid = null;
     public Player whitePlayer = new Player(Players.WHITE);
     public Player blackPlayer = new Player(Players.BLACK);
-
     public Player getInventory(Hive.Players player) => player == Players.WHITE ? whitePlayer : blackPlayer;
     public Dictionary<Cell, Hive.Piece> piecesInPlay = new Dictionary<Cell, Hive.Piece>() {
         //[new Cell(4, 5, -9)] = Piece.create(Pieces.BEE, Players.BLACK, new Cell(4,5, -9)),

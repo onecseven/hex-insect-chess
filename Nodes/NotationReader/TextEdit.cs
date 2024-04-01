@@ -7,7 +7,11 @@ using static NotationReader;
 
 public partial class TextEdit : Godot.TextEdit
 {
-
+	// TODO
+	// Add the index value to the buttons.
+	// Flush buttons when new movelists are validated.
+	// Buttons on pressed should be connectedd to a "travelto" function on this class
+	// We should export a machine that we can use to send moves to and from
     [Export]
     HFlowContainer container = null;
     // Called when the node enters the scene tree for the first time.

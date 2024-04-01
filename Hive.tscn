@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bo78tmpm2j7m2"]
+[gd_scene load_steps=13 format=3 uid="uid://bo78tmpm2j7m2"]
 
 [ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="1_2md7f"]
 [ext_resource type="Script" path="res://Nodes/BoardNode.cs" id="2_5gm5w"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://InternalMoveMaker.cs" id="6_uuio2"]
 [ext_resource type="Script" path="res://gridMoveListener.cs" id="7_gty7b"]
 [ext_resource type="PackedScene" uid="uid://dlnigsf4i8sb3" path="res://MoveSender.tscn" id="7_soia2"]
+[ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="8_eohok"]
 [ext_resource type="Script" path="res://ButtonList.cs" id="10_hc76x"]
 
 [node name="Hive" type="Node2D"]
@@ -21,6 +22,16 @@ Rows = 13
 Cols = 13
 orientation = 0
 ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
+
+[node name="Hover" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("3_ra64y")]
+grid = NodePath("../TatiHex")
+
+[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board", "machine")]
+script = ExtResource("3_p4sjr")
+grid = NodePath("../TatiHex")
+board = NodePath("../Game/BoardNode")
+ColorBase = Color(1, 0, 0.0745098, 1)
+machine = NodePath("../Game/Machine")
 
 [node name="Game" type="Node" parent="."]
 
@@ -85,15 +96,12 @@ script = ExtResource("7_gty7b")
 grid = NodePath("../../../../TatiHex")
 board = NodePath("../../../BoardNode")
 
-[node name="Hover" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("3_ra64y")]
-grid = NodePath("../TatiHex")
-
-[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board", "machine")]
-script = ExtResource("3_p4sjr")
-grid = NodePath("../TatiHex")
-board = NodePath("../Game/BoardNode")
-ColorBase = Color(1, 0, 0.0745098, 1)
-machine = NodePath("../Game/Machine")
+[node name="TextEdit" parent="Game/Machine" node_paths=PackedStringArray("container") instance=ExtResource("8_eohok")]
+offset_left = 3.0
+offset_top = 315.0
+offset_right = 192.0
+offset_bottom = 701.0
+container = NodePath("../../../ScrollContainer/HFlowContainer")
 
 [node name="MoveSender" parent="." instance=ExtResource("7_soia2")]
 
@@ -107,3 +115,12 @@ offset_bottom = 158.0
 script = ExtResource("10_hc76x")
 inventory = NodePath("../Game/BoardNode")
 moveMaker = NodePath("../Game/Machine/InternalMoveMaker")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_left = 1458.0
+offset_top = 12.0
+offset_right = 1600.0
+offset_bottom = 899.0
+
+[node name="HFlowContainer" type="HFlowContainer" parent="ScrollContainer"]
+layout_mode = 2
