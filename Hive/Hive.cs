@@ -135,6 +135,8 @@ namespace Hive
         {
             this.destination = destination;
         }
+        public override string ToString() => $"{player} PLACES {piece} AT {destination}";
+
     }
     public partial class INITIAL_PLACE : Move
     {
@@ -143,6 +145,8 @@ namespace Hive
         {
             this.destination = destination;
         }
+        public override string ToString() => $"{player} PLACES {piece} AT {destination}";
+
     }
 
     public partial class MOVE_PIECE : Move
@@ -154,6 +158,7 @@ namespace Hive
             this.destination = destination;
             this.origin = origin;
         }
+        public override string ToString() => $"{player} MOVES {piece} AT {origin} TO {destination}";
     }
 
     public partial class AUTOPASS : Move
