@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using static NotationReader;
+using System.Collections.Immutable;
+using Hive;
 
 public class NotationReader
 {
@@ -24,7 +26,6 @@ public class NotationReader
             return result;
         }
     }
-
 
     public class Objet : Subject
     {
@@ -203,14 +204,16 @@ public class NotationReader
     }
     private static (Subject, Objet) ParseMove(List<string> tokenized)
     {
-        GD.Print("Original: ", String.Join(" ", tokenized));
-        GD.Print("Notationed: ", ParseSubject(tokenized[0]).ToNotation(), " ", ParseObjet(tokenized[1]).ToNotation());
         return (ParseSubject(tokenized[0]), ParseObjet(tokenized[1]));
     }
     #endregion
     public static List<(Subject, Objet)> Parser (List<List<string>> moves) => moves.Select(ParseMove).ToList();
 
-    public static /*List<Hive.Move>*/ void Translator(List<(Subject, Objet)> moves)
+    private static Cell getCellFromDirection(Cell origin, FTHexCorner dir)
+    {
+        return new Cell(origin.x + HiveUtils.corners[dir].x, origin.y + HiveUtils.corners[dir].y);
+    }
+    public static List<Hive.Move> Translator(List<(Subject, Objet)> moves)
     {
         //TODO
         //1. if subject isn't in seen, the move is place (or initial place depending on the hashset count)
@@ -218,12 +221,48 @@ public class NotationReader
             //1B. use HiveUtils.Corners to figure out where to put the guy
         //2. if subject is in seen, the move is MOVE
 
-        HashSet<string> seen = new HashSet<string>();
-        Dictionary<string, Cell> pieceTracker = new Dictionary<string, Cell>();
-        foreach (var move in moves)
-        {
+        //HashSet<string> seen = new HashSet<string>();
+        //seen.Add(first.subject.ToNotation());
+        //seen.Add(second.subject.ToNotation());
 
+        List<Hive.Move> processed = new List<Hive.Move>();  
+        Cell center = new Sylves.Cell(4, 5, -9);
+
+        Dictionary<string, Cell> pieceTracker = new Dictionary<string, Cell>();
+        List<(Subject, Objet)> iterateMoves = moves.Skip(2).ToList();
+
+        //initial moves
+
+        (Subject subject, Objet objet) first = moves[0];
+        (Subject subject, Objet objet) second = moves[1];
+        Cell secondPieceLoc = getCellFromDirection(center, second.objet.positionalMarker);
+        pieceTracker.Add(first.subject.ToNotation(), center);
+        pieceTracker.Add(second.subject.ToNotation(), secondPieceLoc);
+        processed.Add(new Hive.INITIAL_PLACE(first.subject.playerMarker, first.subject.pieceMarker, center));
+        processed.Add(new Hive.INITIAL_PLACE(second.subject.playerMarker, second.subject.pieceMarker, secondPieceLoc));
+
+        //rest of moves
+        foreach ((Subject, Objet) move in iterateMoves)
+        {
+            Subject subj = move.Item1;
+            Objet objet = move.Item2;
+            bool alreadyExists = pieceTracker.ContainsKey(subj.ToNotation());
+            // Gotta use ((Subject)objet).ToNotation() because if we use the Objet version of ToNotation() we also add the positional marker
+            Cell dest = getCellFromDirection(pieceTracker[((Subject)objet).ToNotation()], objet.positionalMarker);
+            switch (alreadyExists)
+            {
+                case true: 
+                        processed.Add(new Hive.MOVE_PIECE(subj.playerMarker, subj.pieceMarker, pieceTracker[subj.ToNotation()], dest));
+                        pieceTracker[subj.ToNotation()] = dest;
+                        break;
+                case false: 
+                        processed.Add(new Hive.PLACE(subj.playerMarker, subj.pieceMarker, dest));
+                        pieceTracker.Add(subj.ToNotation(), dest);
+                        break;
+            }
+            //GD.Print($"Original: {subj.ToNotation()} {objet.ToNotation()}");
+            //GD.Print($"Translated: {processed.Last().ToString()}");
         }
-        return;
+        return processed;
     }
 }
