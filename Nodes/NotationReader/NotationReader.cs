@@ -155,12 +155,12 @@ public class NotationReader
             case "-":
                 if (isLeft) return FTHexCorner.Left;
                 else return FTHexCorner.Right;
-            case "/":
-                if (isLeft) return FTHexCorner.UpLeft;
-                else return FTHexCorner.UpRight;
             case "\\":
-                if (isLeft) return FTHexCorner.DownLeft;
+                if (isLeft) return FTHexCorner.UpLeft;
                 else return FTHexCorner.DownRight;
+            case "/":
+                if (isLeft) return FTHexCorner.DownLeft;
+                else return FTHexCorner.UpRight;
             default:
                 throw new Exception("POSITION FUCKED UP");
         }
@@ -211,7 +211,7 @@ public class NotationReader
 
     private static Cell getCellFromDirection(Cell origin, FTHexCorner dir)
     {
-        return new Cell(origin.x + HiveUtils.corners[dir].x, origin.y + HiveUtils.corners[dir].y);
+        return new Cell(origin.x + HiveUtils.corners[dir].x, origin.y + HiveUtils.corners[dir].y, origin.z + HiveUtils.corners[dir].z);
     }
     public static List<Hive.Move> Translator(List<(Subject, Objet)> moves)
     {
@@ -255,7 +255,7 @@ public class NotationReader
                         processed.Add(new Hive.MOVE_PIECE(subj.playerMarker, subj.pieceMarker, pieceTracker[subj.ToNotation()], dest));
                         pieceTracker[subj.ToNotation()] = dest;
                         break;
-                case false: 
+                case false:
                         processed.Add(new Hive.PLACE(subj.playerMarker, subj.pieceMarker, dest));
                         pieceTracker.Add(subj.ToNotation(), dest);
                         break;
