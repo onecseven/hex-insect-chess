@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Hex Demo 3": {
+      "commandName": "Project"
+    },
+    "debug hive": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Godot Engine\\godot.windows.opt.tools.64.exe",
+      "commandLineArgs": "--path . --verbose",
+      "workingDirectory": "."
+    }
+  }
+}

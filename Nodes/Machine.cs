@@ -18,7 +18,7 @@ public partial class Machine : Node
             _game_status = value;
             EmitSignal(nameof(gameStatusChanged), _game_status.ToString());
         } }
-    Hive.Players _turn = Hive.Players.BLACK;
+    Hive.Players _turn = Hive.Players.WHITE;
     Hive.Players turn
     {
         get => _turn; set
@@ -200,6 +200,7 @@ public partial class Machine : Node
         {
             bool isCorrectUser = moves[0].player != move.player;
             bool isAdjacentToFirstPiece = board.AreCellsAdjacent(((Hive.INITIAL_PLACE)moves[0]).destination, move.destination);
+            GD.Print("Debug: ", ((Hive.INITIAL_PLACE)moves[0]).destination, move.destination);
             GD.Print("Correct player: ", isCorrectUser);
             GD.Print("Initial placement adjacent to first piece:", isAdjacentToFirstPiece);
             if (isCorrectUser && isAdjacentToFirstPiece) return true;
