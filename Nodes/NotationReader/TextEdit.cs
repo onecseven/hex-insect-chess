@@ -12,9 +12,34 @@ public partial class TextEdit : Godot.TextEdit
 	// Flush buttons when new movelists are validated.
 	// Buttons on pressed should be connectedd to a "travelto" function on this class
 	// We should export a machine that we can use to send moves to and from
+	[Export]
+	HFlowContainer container = null;
+	Button _nextButton = null;
+	[Export]
+	Button nextButton
+	{
+        get => _nextButton; set
+        {
+            _nextButton = value;
+            _nextButton.Pressed += sendNextMove;
+        }
+    }
+
     [Export]
-    HFlowContainer container = null;
+    Machine machine = null;
     // Called when the node enters the scene tree for the first time.
+
+    public List<List<string>> tokenized = null;
+	public List<Move> moves = null;
+	public int lastMoveSent = -1;
+
+	public void sendNextMove()
+	{
+		GD.Print(moves == null);
+		if (moves == null || machine == null ||  lastMoveSent == (moves.Count - 1)) return;
+		machine.send_move(moves[lastMoveSent + 1]);
+		lastMoveSent++;
+	}
     public override void _Ready()
 	{
 	}
@@ -23,10 +48,15 @@ public partial class TextEdit : Godot.TextEdit
 	{
 		if (NotationReader.IsValidMoveList(Text))
 		{
-			var tokenized = NotationReader.Tokenize(Text);
+			tokenized = NotationReader.Tokenize(Text);
 			var parsed = NotationReader.Parser(tokenized);
-			var translated = NotationReader.Translator(parsed);
+			moves = NotationReader.Translator(parsed);
 			int i = 1;
+            foreach (var child in container.GetChildren())
+            {
+                RemoveChild(child);
+                child.QueueFree();
+            }
             foreach (var token in tokenized)
             {
                 var but = new Godot.Button();
