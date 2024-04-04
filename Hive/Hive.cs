@@ -4,45 +4,39 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using System.Runtime.ExceptionServices;
+using HexDemo3;
 
 namespace Hive
 {
-    #region data enums
-    public enum Pieces
+
+    public class Player
     {
-        BEE,
-        ANT,
-        SPIDER,
-        GRASSHOPPER,
-        MOSQUITO,
-        BEETLE,
-        LADYBUG,
+        public Dictionary<Pieces, int> inventory = new Dictionary<Pieces, int>()
+        {
+            [Pieces.BEE] = 1,
+            [Pieces.ANT] = 3,
+            [Pieces.SPIDER] = 2,
+            [Pieces.BEETLE] = 2,
+            [Pieces.GRASSHOPPER] = 3,
+            [Pieces.MOSQUITO] = 1,
+            [Pieces.LADYBUG] = 1
+
+        };
+        public Players color;
+
+        public Player(Players _color)
+        {
+            color = _color;
+        }
+
+        public void piecePlaced(Pieces _piece)
+        {
+            if (hasPiece(_piece)) inventory[_piece]--;
+            else throw new ArgumentOutOfRangeException("piece placed called when player is out of pieces");
+        }
+        public bool hasPiece(Pieces _piece) => inventory.ContainsKey(_piece) && inventory[_piece] > 0;
+
     }
-
-    public enum Phases
-    {
-        PREPARED,
-        INITIAL,
-        WAITING_FOR_MOVE,
-        GAME_OVER,
-    }
-
-    public enum Players
-    {
-        BLACK,
-        WHITE
-    }
-
-    public enum MoveType
-    {
-        INITIAL_PLACE,
-        PLACE,
-        MOVE_PIECE,
-        AUTOPASS
-    }
-
-    #endregion
-
     public class Path
     {
         public List<Cell> steps;
@@ -90,86 +84,49 @@ namespace Hive
             this.steps = step.ToList();
         }
     }
-    //public class Tile
-    //{
-
-    //    public Cell cell;
-    //    public List<Piece> pieces = new List<Piece>();
-    //    public bool isOccupied => pieces.Count > 0;
-    //}
-    public class TheHive
+    public class Tile
     {
-        public bool hasPieceAt(Cell cell)
+
+        public Cell cell;
+        public List<Piece> pieces = new List<Piece>();
+        public Piece activePiece { get {
+                if (pieces.Count > 0) return pieces[0];
+                else return null;
+            } }
+        public bool isOccupied => pieces.Count > 0;
+        public Tile(Cell cell)
         {
-           return true;
+            this.cell = cell;
         }
 
-        public TheHive()
-        {
+        public void addPiece(Piece piece) { pieces.Prepend(piece); }
+        public Piece removePiece(Piece piece) {
+            Piece returnable = pieces[0];
+            pieces.RemoveAt(0);
+            return returnable;
         }
-
+    }
+    public partial class Hive
+    {
+        public Phases game_status = Phases.PREPARED;
+        public Players turn = Players.WHITE;
+        List<Move> moves = new List<Move>();
+        public Sylves.HexGrid grid = new Sylves.HexGrid(25);
+        public Dictionary<Cell,Tile> board = new Dictionary<Cell,Tile>();
+        public Dictionary<Players, Player> players = new Dictionary<Players, Player> {
+            [Players.WHITE] = new Player(Players.WHITE),
+            [Players.BLACK] = new Player(Players.BLACK),
+        };
+        public Hive()
+        {
+            foreach (Cell cell in HexUtils.HexGen(36,24,HexOrientation.PointyTopped))
+            {
+                board.Add(cell, new Tile(cell));
+            }
+        }
      #region rule checkers
-   
-
     //freedom to move is on boardnode
-        #endregion
+     #endregion
     }
-    #region moves
-
-    public partial class Move: GodotObject
-    {
-        public Players player;
-        public Pieces piece;
-        public MoveType type;
-        public Move(Players player, Pieces piece, MoveType type)
-        {
-            this.player = player;
-            this.piece = piece;
-            this.type = type;
-        }
-    }
-    public partial class PLACE : Move 
-    {
-        public Cell destination;
-        public PLACE(Players player, Pieces piece, Cell destination) : base(player, piece, MoveType.PLACE) 
-        {
-            this.destination = destination;
-        }
-        public override string ToString() => $"{player} PLACES {piece} AT {destination}";
-
-    }
-    public partial class INITIAL_PLACE : Move
-    {
-        public Cell destination;
-        public INITIAL_PLACE(Players player, Pieces piece, Cell destination) : base(player, piece, MoveType.INITIAL_PLACE)
-        {
-            this.destination = destination;
-        }
-        public override string ToString() => $"{player} PLACES {piece} AT {destination}";
-
-    }
-
-    public partial class MOVE_PIECE : Move
-    {
-        public Cell origin;
-        public Cell destination;
-        public MOVE_PIECE(Players player, Pieces piece, Cell origin, Cell destination) : base(player, piece, MoveType.MOVE_PIECE)
-        {
-            this.destination = destination;
-            this.origin = origin;
-        }
-        public override string ToString() => $"{player} MOVES {piece} AT {origin} TO {destination}";
-    }
-
-    public partial class AUTOPASS : Move
-    {
-        public AUTOPASS (Players player) : base(player, Pieces.MOSQUITO, MoveType.AUTOPASS)
-        {
-
-        }
-    }
-    #endregion
-
-
 }
 // + player kind
