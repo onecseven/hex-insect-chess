@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=3 uid="uid://c5vrdhau5hoqi"]
+
+[ext_resource type="Script" path="res://Nodes/BoardNode.cs" id="1_2f47l"]
+[ext_resource type="Script" path="res://Nodes/Machine.cs" id="2_vg87h"]
+[ext_resource type="Script" path="res://playerLable.cs" id="3_uqp0c"]
+[ext_resource type="Script" path="res://statusLable.cs" id="4_ign1e"]
+[ext_resource type="Script" path="res://InternalMoveMaker.cs" id="5_d5jwx"]
+[ext_resource type="Script" path="res://gridMoveListener.cs" id="6_fdkjk"]
+
+[node name="Game" type="Node"]
+
+[node name="BoardNode" type="Node2D" parent="."]
+script = ExtResource("1_2f47l")
+
+[node name="Machine" type="Node" parent="."]
+script = ExtResource("2_vg87h")
+
+[node name="playerLable" type="Label" parent="Machine"]
+offset_left = 1.0
+offset_top = 876.0
+offset_right = 41.0
+offset_bottom = 899.0
+script = ExtResource("3_uqp0c")
+
+[node name="statusLable" type="Label" parent="Machine"]
+offset_left = 1.0
+offset_top = 836.0
+offset_right = 41.0
+offset_bottom = 859.0
+script = ExtResource("4_ign1e")
+
+[node name="InternalMoveMaker" type="Node" parent="Machine"]
+script = ExtResource("5_d5jwx")
+
+[node name="moveType" type="Label" parent="Machine/InternalMoveMaker"]
+visible = false
+offset_top = -2.0
+offset_right = 40.0
+offset_bottom = 21.0
+
+[node name="selectedPiece" type="Label" parent="Machine/InternalMoveMaker"]
+visible = false
+offset_left = -1.0
+offset_top = 28.0
+offset_right = 39.0
+offset_bottom = 51.0
+
+[node name="destination" type="Label" parent="Machine/InternalMoveMaker"]
+visible = false
+offset_left = 2.0
+offset_top = 79.0
+offset_right = 42.0
+offset_bottom = 102.0
+
+[node name="origin" type="Label" parent="Machine/InternalMoveMaker"]
+visible = false
+offset_left = 2.0
+offset_top = 118.0
+offset_right = 42.0
+offset_bottom = 141.0
+
+[node name="gridMoveListener" type="Node2D" parent="Machine/InternalMoveMaker"]
+script = ExtResource("6_fdkjk")
