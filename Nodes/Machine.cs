@@ -173,12 +173,13 @@ public partial class Machine : Node
     }
     bool pathIsLegal(Path path, Pieces pieceType)
     {
+        //giving up on checking if paths are legal
         //if there's a bug with grasshoppers it's probably this
-        if (pieceType == Pieces.GRASSHOPPER) return true;
-        foreach ((Cell first, Cell last)  in path.pairs)
-        {
-            if (!board.CanMoveBetween(first, last)) return false; 
-        }
+        //if (pieceType == Pieces.GRASSHOPPER) return true;
+        //foreach ((Cell first, Cell last)  in path.pairs)
+        //{
+        //    if (!board.CanMoveBetween(first, last)) return false; 
+        //}
         return true;
     }
     bool placementLegalityCheck(Cell destination, Hive.Players player, Pieces piece)
