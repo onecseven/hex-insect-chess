@@ -12,6 +12,7 @@ namespace Hive
     public class Board
     {
         public Dictionary<Cell, Tile> piecesInPlay = new Dictionary<Cell, Tile>();
+        public List<Cell> filteredPiecesInPlay { get { return piecesInPlay.Where(kvp => kvp.Value.isOccupied).ToList().Select(KeyValuePair => KeyValuePair.Key).ToList(); } }
         public Sylves.HexGrid grid = new Sylves.HexGrid(25);
         public Board()
         {

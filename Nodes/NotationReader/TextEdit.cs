@@ -22,10 +22,12 @@ public partial class TextEdit : Godot.TextEdit
         }
     }
 
-    [Export]
-    Machine machine = null;
+    //[Export]
+    //Machine machine = null;
 
-	// Called when the node enters the scene tree for the first time.
+    Hive.Hive machine = new Hive.Hive();
+
+    // Called when the node enters the scene tree for the first time.
 
     public List<List<string>> tokenized = null;
 	public List<Move> moves = null;
@@ -33,7 +35,6 @@ public partial class TextEdit : Godot.TextEdit
 
 	public void sendNextMove()
 	{
-		GD.Print(moves == null);
 		if (moves == null || machine == null ||  lastMoveSent == (moves.Count - 1)) return;
 		machine.send_move(moves[lastMoveSent + 1]);
 		lastMoveSent++;

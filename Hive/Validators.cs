@@ -29,14 +29,12 @@ namespace Hive
                     break;
                 case MoveType.PLACE:
                     PLACE placeCasted = (PLACE)move;
-                    GD.Print("\n" + move.player + " PLACING " + placeCasted.piece + " ON " + placeCasted.destination);
                     bool placeCheck = placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece);
                     GD.Print("Placement Check: ", placeCheck);
                     if (!placeCheck) return false;
                     break;
                 case MoveType.MOVE_PIECE:
                     MOVE_PIECE moveCasted = (MOVE_PIECE)move;
-                    GD.Print("\n" + move.player + " MOVING " + moveCasted.piece + " FROM " + moveCasted.origin + " TO " + moveCasted.destination);
                     bool moveCheck = moveIsLegal(moveCasted);
                     bool hiveRuleCheck = oneHiveRuleCheck(moveCasted.origin);
                     GD.Print("Move Is Legal Check: ", moveCheck);
@@ -85,9 +83,14 @@ namespace Hive
         }
         bool placementLegalityCheck(Cell destination, Players player, Pieces piece)
         {
+
+            //FIXME
+            //
             //TODO send getOccupied neighbors to hexutils or maybe even a dedicated board class
             List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(destination);
+
             //pieces in play -> board[Cell]
+
             List<Piece> actualPieces = surroundingPieces.Select(cel => board.piecesInPlay[cel].activePiece).ToList();
             bool piecesBelongToMover = actualPieces.All(pieces => player == pieces.owner);
             bool playerHasPieceInHand = checkIfPlayerHasPieceInInventory(player, piece);
