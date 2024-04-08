@@ -100,7 +100,7 @@ namespace Hive
         }
 
         public void addPiece(Piece piece) { pieces.Prepend(piece); }
-        public Piece removePiece(Piece piece) {
+        public Piece removePiece() {
             Piece returnable = pieces[0];
             pieces.RemoveAt(0);
             return returnable;
@@ -111,22 +111,90 @@ namespace Hive
         public Phases game_status = Phases.PREPARED;
         public Players turn = Players.WHITE;
         List<Move> moves = new List<Move>();
-        public Sylves.HexGrid grid = new Sylves.HexGrid(25);
-        public Dictionary<Cell,Tile> board = new Dictionary<Cell,Tile>();
         public Dictionary<Players, Player> players = new Dictionary<Players, Player> {
             [Players.WHITE] = new Player(Players.WHITE),
             [Players.BLACK] = new Player(Players.BLACK),
         };
+        public Board board = new Board();
         public Hive()
         {
-            foreach (Cell cell in HexUtils.HexGen(36,24,HexOrientation.PointyTopped))
+        }
+
+
+        public void send_move(Move move)
+        {
+            if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
             {
-                board.Add(cell, new Tile(cell));
+                GD.Print("Invalid move");
+                return;
+            }
+            switch (move.type)
+            {
+                case MoveType.INITIAL_PLACE:
+                    this.initialPlace((INITIAL_PLACE)move);
+                    break;
+                case MoveType.MOVE_PIECE:
+                    this.move((MOVE_PIECE)move);
+                    break;
+                case MoveType.PLACE:
+                    this.place((PLACE)move);
+                    break;
+                case MoveType.AUTOPASS:
+                    break;
+            }
+            moves.Add(move);
+            if (wincon_check()) game_over();
+            else advanceTurn();
+        }
+
+        public void advanceTurn()
+        {
+
+            turn = ((Players)((int)turn ^ 1));
+            autopassCheck();
+        }
+
+        public void autopassCheck()
+        {
+            GD.Print("PlayerHasPieces: ", playerHasPiecesInPlay(turn));
+            GD.Print("HasLegalPlacementTarget: ", hasLegalPlacementTarget(turn));
+            GD.Print("PlayerHasPossibleMoves: ", playerHasPossibleMoves(turn));
+
+            if ((playerHasPiecesInPlay(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
+            else
+            {
+                if (moves.Last().type == MoveType.AUTOPASS)
+                {
+                    throw new Exception("AUTOPASS LOOP FUCK");
+                }
+                send_move(new AUTOPASS(turn));
+            };
+
+        }
+
+        private void game_over()
+        {
+            game_status = Phases.GAME_OVER;
+        }
+        private void place(PLACE move)
+        {
+            Player pieceOwner = players[move.player];
+            Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
+            pieceOwner.piecePlaced(newPiece.type);
+            board.placePiece(newPiece);
+        }
+        private void move(MOVE_PIECE move)
+        {
+            Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
+            if (board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied)
+            {
+                Piece newPiece = Piece.create(originalPiece.type, originalPiece.owner, move.destination);
+                board.movePiece(move.origin,newPiece);
             }
         }
-     #region rule checkers
-    //freedom to move is on boardnode
-     #endregion
+        private void initialPlace(INITIAL_PLACE move) => place(new PLACE(move.player, move.piece, move.destination));
+        #region rule checkers
+        //freedom to move is on boardnode
+        #endregion
     }
 }
-// + player kind
