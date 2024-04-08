@@ -118,14 +118,13 @@ offset_bottom = 899.0
 [node name="HFlowContainer" type="HFlowContainer" parent="ScrollContainer"]
 layout_mode = 2
 
-[node name="TextEdit" parent="." node_paths=PackedStringArray("container", "nextButton", "machine") instance=ExtResource("8_eohok")]
+[node name="TextEdit" parent="." node_paths=PackedStringArray("container", "nextButton") instance=ExtResource("8_eohok")]
 offset_left = 3.0
 offset_top = 315.0
 offset_right = 192.0
 offset_bottom = 701.0
 container = NodePath("../ScrollContainer/HFlowContainer")
 nextButton = NodePath("../NextButton")
-machine = NodePath("../Game/Machine")
 
 [node name="NextButton" type="Button" parent="."]
 offset_left = 36.0

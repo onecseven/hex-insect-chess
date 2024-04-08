@@ -130,11 +130,11 @@ public partial class Machine : Node
             case MoveType.MOVE_PIECE:
                 Hive.MOVE_PIECE moveCasted = (Hive.MOVE_PIECE)move;
                 GD.Print("\n" + move.player + " MOVING " + moveCasted.piece + " FROM " + moveCasted.origin + " TO " + moveCasted.destination);
-                bool moveCheck = moveIsLegal(moveCasted);
+                //bool moveCheck = moveIsLegal(moveCasted);
                 bool hiveRuleCheck = oneHiveRuleCheck(moveCasted.origin);
-                GD.Print("Move Is Legal Check: ", moveCheck);
+                //GD.Print("Move Is Legal Check: ", moveCheck);
                 GD.Print("One Hive Rule Check: ", hiveRuleCheck);
-                if (!moveIsLegal(moveCasted)) return false;
+                //if (!moveIsLegal(moveCasted)) return false;
                 if (!oneHiveRuleCheck(moveCasted.origin)) return false;
                 break;
             default:
@@ -157,20 +157,20 @@ public partial class Machine : Node
         return pieceOwner.hasPiece(piece);
     }
     bool checkIfPlayerTurn(Move move) => move.player == turn;
-    bool moveIsLegal(Hive.MOVE_PIECE move)
-    {
-        if (!board.piecesInPlay.ContainsKey(move.origin)) return false;
-        Piece piece = board.piecesInPlay[move.origin];
-        List<Path> paths = Piece.getLegalMoves(piece, board);
-        Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
-        List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
-        bool correctPlayer = piece.owner == turn;
-        GD.Print("Did the correct player submit the move? ", correctPlayer);
-        GD.Print("Legal paths contain destination: ", endpoints.Contains(move.destination));
-        GD.Print("Player path is legal: ", pathIsLegal(playerPath, piece.type));
-        if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
-        else return false;
-    }
+    //bool moveIsLegal(Hive.MOVE_PIECE move)
+    //{
+    //    if (!board.piecesInPlay.ContainsKey(move.origin)) return false;
+    //    Piece piece = board.piecesInPlay[move.origin];
+    //    List<Path> paths = Piece.getLegalMoves(piece, board);
+    //    Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
+    //    List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
+    //    bool correctPlayer = piece.owner == turn;
+    //    GD.Print("Did the correct player submit the move? ", correctPlayer);
+    //    GD.Print("Legal paths contain destination: ", endpoints.Contains(move.destination));
+    //    GD.Print("Player path is legal: ", pathIsLegal(playerPath, piece.type));
+    //    if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
+    //    else return false;
+    //}
     bool pathIsLegal(Path path, Pieces pieceType)
     {
         //giving up on checking if paths are legal
@@ -251,7 +251,7 @@ public partial class Machine : Node
         List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.owner == player).Select(kvp => kvp.Value).ToList();
         List<Path> possibleMoves = new List<Path>();
         foreach (Piece piece in playerPieces) {
-            possibleMoves.AddRange(Piece.getLegalMoves(piece, board));
+            //possibleMoves.AddRange(Piece.getLegalMoves(piece, board));
         }
         if (possibleMoves.Count == 0 || possibleMoves.All(path => path.isNullPath)) return false;
         else return true;

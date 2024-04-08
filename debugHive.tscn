@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxf0r0naqtg35"]
+
+[ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="1_xfnjv"]
+
+[node name="root" type="Node2D"]
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_left = 1458.0
+offset_top = 12.0
+offset_right = 1600.0
+offset_bottom = 899.0
+
+[node name="HFlowContainer" type="HFlowContainer" parent="ScrollContainer"]
+layout_mode = 2
+
+[node name="TextEdit" parent="." node_paths=PackedStringArray("container", "nextButton") instance=ExtResource("1_xfnjv")]
+offset_left = 3.0
+offset_top = 315.0
+offset_right = 192.0
+offset_bottom = 701.0
+container = NodePath("../ScrollContainer/HFlowContainer")
+nextButton = NodePath("../NextButton")
+
+[node name="NextButton" type="Button" parent="."]
+offset_left = 36.0
+offset_top = 702.0
+offset_right = 152.0
+offset_bottom = 738.0
+text = "next"

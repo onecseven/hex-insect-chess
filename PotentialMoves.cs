@@ -38,7 +38,8 @@ public partial class PotentialMoves : Node2D
                     if (board.tileIsOccupied(lic) && machine.oneHiveRuleCheck(lic))
                     {
                         Piece piece = board.piecesInPlay[lic];
-                        potentialMoves = Piece.getLegalMoves(piece, board);
+                        //FIXME
+                        //potentialMoves = Piece.getLegalMoves(piece, board);
                     }
                     QueueRedraw();
                 }
