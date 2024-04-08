@@ -94,9 +94,9 @@ namespace Hive
             List<Piece> actualPieces = surroundingPieces.Select(cel => board.piecesInPlay[cel].activePiece).ToList();
             bool piecesBelongToMover = actualPieces.All(pieces => player == pieces.owner);
             bool playerHasPieceInHand = checkIfPlayerHasPieceInInventory(player, piece);
-            GD.Print("Player has pieces to connect: ", actualPieces.Count > 0);
-            GD.Print("Pieces belong to mover: ", piecesBelongToMover);
-            GD.Print("Player has piece " + piece + " in inventory: ", playerHasPieceInHand);
+            //GD.Print("Player has pieces to connect: ", actualPieces.Count > 0);
+            //GD.Print("Pieces belong to mover: ", piecesBelongToMover);
+            //GD.Print("Player has piece " + piece + " in inventory: ", playerHasPieceInHand);
             if (actualPieces.Count > 0 && piecesBelongToMover && playerHasPieceInHand) return true;
             return false;
         }
@@ -187,7 +187,7 @@ namespace Hive
         {
             HashSet<Cell> hypoHive = new HashSet<Cell>();
             //br
-            List<Cell> prelim = board.piecesInPlay.Keys.ToList();
+            List<Cell> prelim = board.filteredPiecesInPlay;
             prelim.Remove(movingPiece);
             Cell first = prelim.First();
             int target = prelim.Count;
