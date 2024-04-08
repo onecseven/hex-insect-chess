@@ -123,6 +123,7 @@ namespace Hive
 
         public void send_move(Move move)
         {
+            GD.Print("\nMOVE RECEIVED");
             if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
             {
                 GD.Print("Invalid move");
@@ -156,9 +157,6 @@ namespace Hive
 
         public void autopassCheck()
         {
-            GD.Print("PlayerHasPieces: ", playerHasPiecesInPlay(turn));
-            GD.Print("HasLegalPlacementTarget: ", hasLegalPlacementTarget(turn));
-            GD.Print("PlayerHasPossibleMoves: ", playerHasPossibleMoves(turn));
 
             if ((playerHasPiecesInPlay(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
             else
@@ -167,6 +165,8 @@ namespace Hive
                 {
                     throw new Exception("AUTOPASS LOOP FUCK");
                 }
+                GD.Print("Autopass!");
+
                 send_move(new AUTOPASS(turn));
             };
 
@@ -179,6 +179,7 @@ namespace Hive
         private void place(PLACE move)
         {
             GD.Print("\n" + move.player + " PLACING " + move.piece + " ON " + move.destination);
+            GD.Print("\n=====");
             Player pieceOwner = players[move.player];
             Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
             pieceOwner.piecePlaced(newPiece.type);
