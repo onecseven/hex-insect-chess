@@ -99,7 +99,7 @@ namespace Hive
             this.cell = cell;
         }
 
-        public void addPiece(Piece piece) { pieces.Prepend(piece); }
+        public void addPiece(Piece piece) { pieces.Insert(0,piece); }
         public Piece removePiece() {
             Piece returnable = pieces[0];
             pieces.RemoveAt(0);
@@ -178,6 +178,7 @@ namespace Hive
         }
         private void place(PLACE move)
         {
+            GD.Print("\n" + move.player + " PLACING " + move.piece + " ON " + move.destination);
             Player pieceOwner = players[move.player];
             Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
             pieceOwner.piecePlaced(newPiece.type);
@@ -185,6 +186,7 @@ namespace Hive
         }
         private void move(MOVE_PIECE move)
         {
+            GD.Print("\n" + move.player + " MOVING " + move.piece + " FROM " + move.origin + " TO " + move.destination);
             Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
             if (board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied)
             {
