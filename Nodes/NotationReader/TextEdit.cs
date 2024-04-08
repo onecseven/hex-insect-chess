@@ -24,7 +24,8 @@ public partial class TextEdit : Godot.TextEdit
 
     [Export]
     Machine machine = null;
-    // Called when the node enters the scene tree for the first time.
+
+	// Called when the node enters the scene tree for the first time.
 
     public List<List<string>> tokenized = null;
 	public List<Move> moves = null;
