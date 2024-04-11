@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-//TODO PUT ALL THE COOL STUFF IN HIVE.CS 
+//TODO DELETE EVERYTHING THAT'S NOT STRICTLY ABOUT DRAWING
 public partial class BoardNode : Node2D
 {
     private readonly Cell nullCell = new Cell(-12, -12, -12);

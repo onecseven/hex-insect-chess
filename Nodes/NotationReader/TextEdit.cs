@@ -7,8 +7,9 @@ using static NotationReader;
 
 public partial class TextEdit : Godot.TextEdit
 {
-	// TODO
+	// TODO 
 	// Add the index value to the buttons.
+	// Let's us recreate boardstates
 	[Export]
 	HFlowContainer container = null;
 	Button _nextButton = null;
@@ -41,8 +42,15 @@ public partial class TextEdit : Godot.TextEdit
 	}
     public override void _Ready()
 	{
-	}
+		machine.onSuccessfulMove += eventcheck;
+		_on_text_changed();
+    }
 
+	public void eventcheck(Move move)
+	{
+		// events working
+		GD.Print("move has been sent");
+	}
 	public void _on_text_changed()
 	{
 		if (NotationReader.IsValidMoveList(Text))
