@@ -75,7 +75,6 @@ namespace Hive
             this.steps = steps;
             this.pathType = type;
         }
-
         public bool isNullPath { get => steps.Count == 0;}
         public Path(Cell step, Pieces type)
         {
@@ -118,12 +117,26 @@ namespace Hive
     {
         public Phases game_status = Phases.PREPARED;
         public Players turn = Players.WHITE;
-        List<Move> moves = new List<Move>();
+        public List<Move> moves = new List<Move>();
         public Dictionary<Players, Player> players = new Dictionary<Players, Player> {
             [Players.WHITE] = new Player(Players.WHITE),
             [Players.BLACK] = new Player(Players.BLACK),
         };
         public Board board = new Board();
+
+        //when the constructor is over
+        public delegate void gameIsReadyEventHandler();
+        public event gameIsReadyEventHandler gameIsReady;
+        //when a move is accepted
+        public delegate void onSuccessfulMoveEventHandler(Move move);
+        public event onSuccessfulMoveEventHandler onSuccessfulMove;
+        //when a move is rejected
+        public delegate void onFailedMoveEventHandler(string error);
+        public event onFailedMoveEventHandler onFailedMove; 
+        //when the game is done
+        public delegate void onGameOverEventHandler();
+        public event onGameOverEventHandler onGameOver;
+
         public Hive()
         {
         }
@@ -134,7 +147,7 @@ namespace Hive
             GD.Print("\nMOVE RECEIVED");
             if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
             {
-                GD.Print("Invalid move");
+                onFailedMove?.Invoke("Invalid Move");
                 return;
             }
             switch (move.type)
@@ -152,6 +165,7 @@ namespace Hive
                     break;
             }
             moves.Add(move);
+            onSuccessfulMove(move);
             if (wincon_check()) game_over();
             else advanceTurn();
         }
@@ -166,6 +180,7 @@ namespace Hive
         private void game_over()
         {
             game_status = Phases.GAME_OVER;
+            onGameOver();
         }
         private void place(PLACE move)
         {
