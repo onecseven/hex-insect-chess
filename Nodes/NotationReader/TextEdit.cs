@@ -53,11 +53,6 @@ public partial class TextEdit : Godot.TextEdit
 		_on_text_changed();
 	}
 
-	public void eventcheck(Move move)
-	{
-		// events working
-		//GD.Print("move has been sent");
-	}
 	public void _on_text_changed()
 	{
 		if (NotationReader.IsValidMoveList(Text))
