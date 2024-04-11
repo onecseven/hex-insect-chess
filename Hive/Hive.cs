@@ -69,15 +69,18 @@ namespace Hive
                 return result;
             }
         }
-        public Path(List<Cell> steps)
+        public Pieces pathType;
+        public Path(List<Cell> steps, Pieces type)
         {
             this.steps = steps;
+            this.pathType = type;
         }
 
         public bool isNullPath { get => steps.Count == 0;}
-        public Path(Cell step)
+        public Path(Cell step, Pieces type)
         {
             this.steps = new List<Cell>() { step };
+            this.pathType = type;
         }
         public Path(params Cell[] step)
         {
