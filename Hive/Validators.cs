@@ -14,7 +14,7 @@ namespace Hive
         {
             if (move.player != turn || (mustPlayBee(move.player) && (move.piece != Pieces.BEE)))
             {
-                GD.PrintErr("Must Play Bee?");
+                GD.PrintErr("Must Play Bee or wrong player.");
                 return false;
             }
             switch (move.type)
@@ -22,15 +22,13 @@ namespace Hive
                 case MoveType.INITIAL_PLACE:
                     INITIAL_PLACE initialPlaceCasted = (INITIAL_PLACE)move;
                     GD.Print("\n" + move.player + "INITIAL PLACING " + initialPlaceCasted.piece + " ON " + initialPlaceCasted.destination);
-                    if (initialPlacementCheck(initialPlaceCasted)) return false;
-                    break;
+                    return initialPlacementCheck(initialPlaceCasted);
                 case MoveType.PLACE:
                     PLACE placeCasted = (PLACE)move;
-                    if (!placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece)) return false;
-                    break;
+                    return placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece);
                 case MoveType.MOVE_PIECE:
                     MOVE_PIECE moveCasted = (MOVE_PIECE)move;
-                    if (!moveIsLegal(moveCasted) || oneHiveRuleCheck(moveCasted.origin)) return false;
+                    if (moveIsLegal(moveCasted) == false || oneHiveRuleCheck(moveCasted.origin) == false) return false;
                     break;
                 default:
                     break;
@@ -82,8 +80,6 @@ namespace Hive
         bool placementLegalityCheck(Cell destination, Players player, Pieces piece)
         {
             bool checkIfPlayerHasPieceInInventory(Players player, Pieces piece) => players[player].hasPiece(piece);
-            //FIXME
-            //
             //TODO send getOccupied neighbors to hexutils or maybe even a dedicated board class
             List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(destination);
 
