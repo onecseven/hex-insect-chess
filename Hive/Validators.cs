@@ -14,7 +14,7 @@ namespace Hive
         {
             if (move.player != turn || (mustPlayBee(move.player) && (move.piece != Pieces.BEE)))
             {
-                GD.Print("Must Play Bee?");
+                GD.PrintErr("Must Play Bee?");
                 return false;
             }
             switch (move.type)
@@ -22,48 +22,32 @@ namespace Hive
                 case MoveType.INITIAL_PLACE:
                     INITIAL_PLACE initialPlaceCasted = (INITIAL_PLACE)move;
                     GD.Print("\n" + move.player + "INITIAL PLACING " + initialPlaceCasted.piece + " ON " + initialPlaceCasted.destination);
-                    bool iPlaceCheck = initialPlacementCheck(initialPlaceCasted);
-                    GD.Print("Is it a bee placement? ", move.type != MoveType.AUTOPASS && move.type != MoveType.MOVE_PIECE && move.piece == Pieces.BEE);
-                    GD.Print("Initial Placement Check: ", iPlaceCheck);
-                    if (!iPlaceCheck) return false;
+                    if (initialPlacementCheck(initialPlaceCasted)) return false;
                     break;
                 case MoveType.PLACE:
                     PLACE placeCasted = (PLACE)move;
-                    bool placeCheck = placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece);
-                    GD.Print("Placement Check: ", placeCheck);
-                    if (!placeCheck) return false;
+                    if (!placementLegalityCheck(placeCasted.destination, placeCasted.player, placeCasted.piece)) return false;
                     break;
                 case MoveType.MOVE_PIECE:
                     MOVE_PIECE moveCasted = (MOVE_PIECE)move;
-                    bool moveCheck = moveIsLegal(moveCasted);
-                    bool hiveRuleCheck = oneHiveRuleCheck(moveCasted.origin);
-                    GD.Print("Move Is Legal Check: ", moveCheck);
-                    GD.Print("One Hive Rule Check: ", hiveRuleCheck);
-                    if (!moveIsLegal(moveCasted)) return false;
-                    if (!oneHiveRuleCheck(moveCasted.origin)) return false;
+                    if (!moveIsLegal(moveCasted) || oneHiveRuleCheck(moveCasted.origin)) return false;
                     break;
                 default:
                     break;
             }
             return true;
         }
-        bool checkIfPlayerHasPieceInInventory(Players player, Pieces piece) => players[player].hasPiece(piece);
-        bool checkIfPlayerTurn(Move move) => move.player == turn;
+
+        #region MOVE_PIECE check
         bool moveIsLegal(MOVE_PIECE move)
         {
             // check that the piece is in play
-            if (!board.piecesInPlay[move.origin].isOccupied && board.piecesInPlay[move.origin].activePiece.owner == move.player) return false;
+            if (!board.piecesInPlay[move.origin].isOccupied || board.piecesInPlay[move.origin].activePiece.owner != move.player) return false;
             Piece piece = board.piecesInPlay[move.origin].activePiece;
-            // we can just check board[Cell]
-            // we gotta rewrite that shit
             List<Path> paths = Piece.getLegalMoves(piece, board);
             Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
             List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
-            bool correctPlayer = piece.owner == turn;
-            GD.Print("Did the correct player submit the move? ", correctPlayer);
-            GD.Print("Legal paths contain destination: ", endpoints.Contains(move.destination));
-            GD.Print("Player path is legal: ", pathIsLegal(playerPath, piece.type));
-            if (correctPlayer && endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
+            if (endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
             else return false;
         }
         bool pathIsLegal(Path path, Pieces pieceType)
@@ -81,9 +65,10 @@ namespace Hive
             //}
             return true;
         }
+        #endregion
         bool placementLegalityCheck(Cell destination, Players player, Pieces piece)
         {
-
+            bool checkIfPlayerHasPieceInInventory(Players player, Pieces piece) => players[player].hasPiece(piece);
             //FIXME
             //
             //TODO send getOccupied neighbors to hexutils or maybe even a dedicated board class
@@ -106,11 +91,7 @@ namespace Hive
             else if (moves.Count == 1)
             {
                 bool isCorrectUser = moves[0].player != move.player;
-                //TODO send this to new board class
                 bool isAdjacentToFirstPiece = board.AreCellsAdjacent(((INITIAL_PLACE)moves[0]).destination, move.destination);
-                GD.Print("Debug: ", ((INITIAL_PLACE)moves[0]).destination, move.destination);
-                GD.Print("Correct player: ", isCorrectUser);
-                GD.Print("Initial placement adjacent to first piece:", isAdjacentToFirstPiece);
                 if (isCorrectUser && isAdjacentToFirstPiece) return true;
             }
             return false;
@@ -129,15 +110,24 @@ namespace Hive
             }
             return false;
         }
-        bool hasPlayerWon(Players player)
+
+        #region autopass checks
+
+        public void autopassCheck()
         {
-            //board rewrte
-            List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.isOccupied && kvp.Value.activePiece.owner != player).Select(kvp => kvp.Value.activePiece).ToList();
-            Piece bee = playerPieces.Where(pce => pce.type == Pieces.BEE).FirstOrDefault();
-            if (bee == null) return false;
-            //board rewrite
-            if (board.getOccupiedNeighbors(bee.location).Count == 6) return true;
-            else return false;
+
+            if ((playerHasPiecesInPlay(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
+            else
+            {
+                if (moves.Last().type == MoveType.AUTOPASS)
+                {
+                    throw new Exception("AUTOPASS LOOP FUCK");
+                }
+                GD.Print("Autopass!");
+
+                send_move(new AUTOPASS(turn));
+            };
+
         }
         bool hasLegalPlacementTarget(Players player)
         {
@@ -146,7 +136,7 @@ namespace Hive
             List<Piece> playerPieces = board.piecesInPlay.Where(kvp => kvp.Value.isOccupied && kvp.Value.activePiece.owner == player).Select(kvp => kvp.Value.activePiece).ToList();
             foreach (Piece item in playerPieces)
             {
-            //br
+                //br
                 List<Cell> neighbors = board.getEmptyNeighbors(item.location);
                 if (neighbors.Any(neigh => placementLegalityCheck(neigh, player, item.type))) return true;
             }
@@ -167,6 +157,10 @@ namespace Hive
             if (possibleMoves.Count == 0 || possibleMoves.All(path => path.isNullPath)) return false;
             else return true;
         }
+        #endregion
+
+        #region onehiverule check
+
         private HashSet<Cell> recursiveGetNeighbors(Cell cell, HashSet<Cell> memo, Cell? excludedCell)
         {
             //br
@@ -195,9 +189,9 @@ namespace Hive
             if (computed.Count != target) return false;
             return true;
         }
+        #endregion
         public bool wincon_check()
         {
-            //br
             List<Piece> bees = board.piecesInPlay.Where(kvp => kvp.Value.isOccupied && kvp.Value.pieces.Any(pie => pie.type == Pieces.BEE)).Select(kvp => kvp.Value.activePiece).ToList();
             if (bees.Any(piece => board.getOccupiedNeighbors(piece.location).Count == 6)) return true;
             return false;
