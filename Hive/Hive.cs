@@ -89,16 +89,21 @@ namespace Hive
 
         public Cell cell;
         public List<Piece> pieces = new List<Piece>();
-        public Piece activePiece { get {
+        public Piece activePiece
+        {
+            get
+            {
                 if (pieces.Count > 0) return pieces[0];
                 else return null;
-            } }
+            }
+        }
+        public int zindex => isOccupied ? pieces.Count - 1 : 0;
+        public bool hasBlockedPiece => pieces.Count > 1;
         public bool isOccupied => pieces.Count > 0;
         public Tile(Cell cell)
         {
             this.cell = cell;
         }
-
         public void addPiece(Piece piece) { pieces.Insert(0,piece); }
         public Piece removePiece() {
             Piece returnable = pieces[0];
@@ -153,23 +158,6 @@ namespace Hive
 
             turn = ((Players)((int)turn ^ 1));
             autopassCheck();
-        }
-
-        public void autopassCheck()
-        {
-
-            if ((playerHasPiecesInPlay(turn) && hasLegalPlacementTarget(turn)) || playerHasPossibleMoves(turn)) return;
-            else
-            {
-                if (moves.Last().type == MoveType.AUTOPASS)
-                {
-                    throw new Exception("AUTOPASS LOOP FUCK");
-                }
-                GD.Print("Autopass!");
-
-                send_move(new AUTOPASS(turn));
-            };
-
         }
 
         private void game_over()
