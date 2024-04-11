@@ -4,6 +4,7 @@ using Sylves;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using System.Net.Http.Headers;
 
 namespace Hive
 {
@@ -79,7 +80,7 @@ namespace Hive
     public class Bee : Piece
     {
         public Bee(Players p, Cell l) : base(Pieces.BEE, p, l) { }
-        public static List<Path> _getLegalMoves(Board board, Cell origin) => board.adjacentLegalCells(origin).Select(cell => new Path(cell)).ToList();
+        public static List<Path> _getLegalMoves(Board board, Cell origin) => board.adjacentLegalCells(origin).Select(cell => new Path(cell, Pieces.BEE)).ToList();
     }
     public class Mosquito : Piece
     {
@@ -116,7 +117,7 @@ namespace Hive
                 foreach (Cell seStep in secondStep)
                 {
                     List<Cell> lastStep = board.getEmptyNeighbors(seStep);
-                    lastStep.ForEach(last => paths.Add(new Path(new List<Cell>() { firstStep, seStep, last })));
+                    lastStep.ForEach(last => paths.Add(new Path(new List<Cell>() { firstStep, seStep, last }, Pieces.LADYBUG)));
                 }
             }
             return paths;
@@ -131,7 +132,7 @@ namespace Hive
             List<Cell> result = new List<Cell>();
             result.AddRange(board.adjacentLegalCells(origin));
             result.AddRange(board.getOccupiedNeighbors(origin));
-            return result.ConvertAll<Path>(cell => new Path(cell));
+            return result.ConvertAll<Path>(cell => new Path(cell, Pieces.BEE));
         }
         public Beetle(Players p, Cell l) : base(Pieces.BEETLE, p, l) { }  
     }
@@ -152,7 +153,7 @@ namespace Hive
                 {
                     List<Cell> lastStep = board.hypotheticalAdjacentLegalCells(seStep, origin);
                     lastStep.Remove(firstStep);
-                    lastStep.ForEach(last => paths.Add(new Path(firstStep, seStep, last)));
+                    lastStep.ForEach(last => paths.Add(new Path(new List<Cell>() { firstStep, seStep, last }, Pieces.SPIDER)));
                 }
             }
             return paths;
@@ -178,7 +179,7 @@ namespace Hive
                 else
                 {
                     result.Add(newOne);
-                    return new Path(result);
+                    return new Path(result, Pieces.GRASSHOPPER);
                 }
             }
             throw new Exception("huh");
@@ -205,10 +206,12 @@ namespace Hive
             foreach(var p in adj)
             {
                 excluded.UnionWith(findAll(board, p, excluded));
-                break;
+                break;  
             }
             return excluded;
         }
+
+        //FIX WAIT WHO IS USING THIS?
         public static List<Path> findViablePath(Board board, Cell origin, Cell dest, List<Cell> excluded)
         {
             List<Path> result = new List<Path>();
@@ -217,7 +220,7 @@ namespace Hive
             if (nextSteps.Contains(dest) && board.CanMoveBetween(origin, dest)) 
             {
                 excluded.Add(dest);
-                result.Add(new Path(excluded));
+                result.Add(new Path(excluded, Pieces.ANT));
                 return result;
             }
             foreach (Cell step in nextSteps)
@@ -229,7 +232,7 @@ namespace Hive
 
         public static List<Path> _getLegalMoves(Board board, Cell origin)
         {
-            return findAll(board, origin, new HashSet<Cell>()).ToList().Select(x => new Path(x)).ToList();
+            return findAll(board, origin, new HashSet<Cell>()).ToList().Select(x => new Path(x, Pieces.ANT)).ToList();
         }
         public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
     }
