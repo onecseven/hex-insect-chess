@@ -215,11 +215,6 @@ public class NotationReader
     }
     public static List<Hive.Move> Translator(List<(Subject, Objet)> moves)
     {
-        //TODO
-        //1. if subject isn't in seen, the move is place (or initial place depending on the hashset count)
-            //1A. if its the first place, decide on a center tile to put it on
-            //1B. use HiveUtils.Corners to figure out where to put the guy
-        //2. if subject is in seen, the move is MOVE
 
         //HashSet<string> seen = new HashSet<string>();
         //seen.Add(first.subject.ToNotation());

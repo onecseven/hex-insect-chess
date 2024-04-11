@@ -18,6 +18,35 @@ offset_left = 3.0
 offset_top = 315.0
 offset_right = 192.0
 offset_bottom = 701.0
+text = "URL: https://entomology.gitlab.io/hive.html?game=bsn:U!HV-BlackMagic-carolina-2010-12-01-0011
+
+1: wS1 .
+2: bS1 /wS1
+3: wA1 wS1-
+4: bQ bS1\\
+5: wQ \\wS1
+6: bA1 -bS1
+7: wA1 bQ\\
+8: bM bA1\\
+9: wB1 /wA1
+10: bA1 /wB1
+11: wB2 wA1-
+12: bA2 -bS1
+13: wB2 bQ-
+14: bA2 wQ/
+15: wA2 wS1-
+16: bA2 wA2/
+17: wG1 wA1-
+18: bA3 -bS1
+19: wG1 bM\\
+20: bA3 \\wQ
+21: wL wA1-
+22: bA3 wL-
+23: wM wB1-
+24: bA1 \\wQ
+25: wM bS1-
+"
+placeholder_text = ""
 container = NodePath("../ScrollContainer/HFlowContainer")
 nextButton = NodePath("../NextButton")
 
