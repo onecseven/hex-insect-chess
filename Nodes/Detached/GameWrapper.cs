@@ -17,10 +17,10 @@ public partial class GameWrapper : Node2D
 		onOuterSuccessfulMove(move);
     }
 
-    public override void _Ready()
+	public override void _Ready()
 	{
 		machine.onSuccessfulMove += outerOnSuccessfulMove;
-    }
+	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
@@ -38,5 +38,5 @@ public partial class GameWrapper : Node2D
         {
 			machine.send_move(move);
         }
-    }
+	}
 }
