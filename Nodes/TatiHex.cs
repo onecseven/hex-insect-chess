@@ -5,6 +5,24 @@ using System.Collections.Generic;
 
 public partial class TatiHex : Node2D
 {
+    Sylves.HexGrid grid
+    {
+        get
+        {
+            return gameWrapper.machine.board.grid;
+        }
+    }
+
+    [Export]
+    GameWrapper gameWrapper = null;
+    [Export]
+    Font defaultFont = ThemeDB.FallbackFont;
+    [Export]
+    int defaultFontSize = ThemeDB.FallbackFontSize;
+    [Export]
+    public Color ColorBase { get; set; } = Colors.Red;
+    [Export]
+    public bool DrawGrid = true;
     [Export]
     public int Hexsize
     {
@@ -34,21 +52,12 @@ public partial class TatiHex : Node2D
     }
     [Export]
     public HexOrientation orientation { get; set; }
-    [Export]
-    Font defaultFont = ThemeDB.FallbackFont;
-    [Export]
-    int defaultFontSize = ThemeDB.FallbackFontSize;
-    [Export]
-    public Color ColorBase { get; set; } = Colors.Red;
-    [Export]
-    public bool DrawGrid = true;
 
     public Dictionary<Cell, Vector3> hexes = new Dictionary<Cell, Vector3>();
+
     public int _hexsize = 25;
     public int _rows = 36;
     public int _cols = 24;
-    public Sylves.HexGrid grid;
-
     public override void _Ready()
     {
         updateGrid();
@@ -67,12 +76,12 @@ public partial class TatiHex : Node2D
     public Vector2[] GetHexCornersFromCenter(Vector3 center) => GetHexCornersFromCenter(new Vector2(center.X, center.Y));
     public void updateGrid()
     {
-        grid = new Sylves.HexGrid(_hexsize, orientation);
+        var inner_grid = new Sylves.HexGrid(_hexsize, orientation);
         var cells = HexUtils.HexGen(Rows, Cols, orientation);
         hexes.Clear();
         foreach (Cell cell in cells)
         {
-            hexes.TryAdd(cell, grid.GetCellCenter(cell));
+            hexes.TryAdd(cell, inner_grid.GetCellCenter(cell));
         }
         QueueRedraw();
     }
