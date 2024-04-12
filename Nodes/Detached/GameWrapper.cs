@@ -5,7 +5,7 @@ public partial class GameWrapper : Node2D
 {
 	// Called when the node enters the scene tree for the first time.
 
-	Hive.Hive machine = new Hive.Hive();
+	public Hive.Hive machine = new Hive.Hive();
 	public override void _Ready()
 	{
 	}
