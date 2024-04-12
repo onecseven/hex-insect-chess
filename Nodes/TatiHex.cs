@@ -74,9 +74,12 @@ public partial class TatiHex : Node2D
     }
     public Vector2[] GetHexCornersFromCenter(Vector2 center) => HexUtils.HexCornersFromCenter(center, _hexsize / 2, orientation);
     public Vector2[] GetHexCornersFromCenter(Vector3 center) => GetHexCornersFromCenter(new Vector2(center.X, center.Y));
+
+    Sylves.HexGrid inner_grid = new Sylves.HexGrid(25, HexOrientation.PointyTopped);
+
     public void updateGrid()
     {
-        var inner_grid = new Sylves.HexGrid(_hexsize, orientation);
+        inner_grid = new Sylves.HexGrid(_hexsize, orientation);
         var cells = HexUtils.HexGen(Rows, Cols, orientation);
         hexes.Clear();
         foreach (Cell cell in cells)
@@ -100,9 +103,10 @@ public partial class TatiHex : Node2D
             }
         }
     }
+
     public Cell? FindCell(Vector2 loc)
     {
-        if (grid.FindCell(new Vector3(loc.X, loc.Y, 0), out Cell lic))
+        if (inner_grid.FindCell(new Vector3(loc.X, loc.Y, 0), out Cell lic))
         {
             return lic;
         } else
