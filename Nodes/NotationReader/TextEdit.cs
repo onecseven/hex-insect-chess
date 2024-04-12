@@ -16,17 +16,24 @@ public partial class TextEdit : Godot.TextEdit
 	[Export]
 	Button nextButton
 	{
-        get => _nextButton; set
-        {
-            _nextButton = value;
-            _nextButton.Pressed += sendNextMove;
-        }
-    }
+		get => _nextButton; set
+		{
+			_nextButton = value;
+			_nextButton.Pressed += sendNextMove;
+		}
+	}
 
-    //[Export]
-    //Machine machine = null;
+	//[Export]
+	//Machine machine = null;
 
-    Hive.Hive machine = new Hive.Hive();
+	Hive.Hive machine { get {
+			return gameWrapper.machine;
+		} }
+
+	GameWrapper _gameWrapper = null;
+
+	[Export]
+	GameWrapper gameWrapper = null;
 
     // Called when the node enters the scene tree for the first time.
 
