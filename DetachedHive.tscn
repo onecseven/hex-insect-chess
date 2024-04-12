@@ -1,22 +1,81 @@
 [gd_scene load_steps=5 format=3 uid="uid://bu6fc226yuaj7"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
-[ext_resource type="Script" path="res://Nodes/BoardNode.cs" id="2_n1ihn"]
-[ext_resource type="PackedScene" uid="uid://pu8oamm6lk8b" path="res://hover.tscn" id="3_4a8bu"]
-[ext_resource type="Script" path="res://PotentialMoves.cs" id="4_7hkwa"]
+[ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
+[ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="4_uf6w0"]
+[ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
 
 [node name="GameWrapper" type="Node2D"]
 script = ExtResource("1_34qvu")
 
-[node name="BoardNode" type="Node2D" parent="."]
-script = ExtResource("2_n1ihn")
+[node name="notationReader" type="Node2D" parent="."]
 
-[node name="Hover" parent="BoardNode" node_paths=PackedStringArray("grid") instance=ExtResource("3_4a8bu")]
-grid = NodePath("")
+[node name="ScrollContainer" type="ScrollContainer" parent="notationReader"]
+offset_left = 1458.0
+offset_top = 12.0
+offset_right = 1600.0
+offset_bottom = 899.0
 
-[node name="PotentialMoves" type="Node2D" parent="BoardNode" node_paths=PackedStringArray("grid", "board", "machine")]
-script = ExtResource("4_7hkwa")
-grid = NodePath("")
-board = NodePath("")
-ColorBase = Color(1, 0, 0.0745098, 1)
-machine = NodePath("")
+[node name="HFlowContainer" type="HFlowContainer" parent="notationReader/ScrollContainer"]
+layout_mode = 2
+
+[node name="TextEdit" parent="notationReader" node_paths=PackedStringArray("container", "nextButton", "gameWrapper") instance=ExtResource("3_dehar")]
+offset_left = 3.0
+offset_top = 315.0
+offset_right = 192.0
+offset_bottom = 701.0
+text = "URL: https://entomology.gitlab.io/hive.html?game=bsn:U!HV-BlackMagic-carolina-2010-12-01-0011
+
+1: wS1 .
+2: bS1 /wS1
+3: wA1 wS1-
+4: bQ bS1\\
+5: wQ \\wS1
+6: bA1 -bS1
+7: wA1 bQ\\
+8: bM bA1\\
+9: wB1 /wA1
+10: bA1 /wB1
+11: wB2 wA1-
+12: bA2 -bS1
+13: wB2 bQ-
+14: bA2 wQ/
+15: wA2 wS1-
+16: bA2 wA2/
+17: wG1 wA1-
+18: bA3 -bS1
+19: wG1 bM\\
+20: bA3 \\wQ
+21: wL wA1-
+22: bA3 wL-
+23: wM wB1-
+24: bA1 \\wQ
+25: wM bS1-
+"
+placeholder_text = ""
+container = NodePath("../ScrollContainer/HFlowContainer")
+nextButton = NodePath("../NextButton")
+gameWrapper = NodePath("../..")
+
+[node name="NextButton" type="Button" parent="notationReader"]
+offset_left = 36.0
+offset_top = 702.0
+offset_right = 152.0
+offset_bottom = 738.0
+text = "next"
+
+[node name="TatiHex" parent="." node_paths=PackedStringArray("gameWrapper") instance=ExtResource("4_uf6w0")]
+position = Vector2(284, 53)
+gameWrapper = NodePath("..")
+defaultFontSize = 14
+ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
+Hexsize = 80
+Rows = 13
+Cols = 13
+orientation = 0
+
+[node name="PiecePainter" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("parent", "drawnGrid")]
+position = Vector2(-284, -53)
+script = ExtResource("5_x0qel")
+parent = NodePath("../..")
+drawnGrid = NodePath("..")

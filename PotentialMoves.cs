@@ -23,28 +23,28 @@ public partial class PotentialMoves : Node2D
     private List<Path> potentialMoves = new List<Path>();
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (grid == null || board == null) return;
+        //if (grid == null || board == null) return;
 
-        if (@event is InputEventMouse)
-        {
-            Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
-            if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
-            {
-                if (lic == hoveringCell) return;
-                else
-                {
-                    potentialMoves.Clear();
-                    hoveringCell = lic;
-                    if (board.tileIsOccupied(lic) && machine.oneHiveRuleCheck(lic))
-                    {
-                        Piece piece = board.piecesInPlay[lic];
-                        //FIXME
-                        //potentialMoves = Piece.getLegalMoves(piece, board);
-                    }
-                    QueueRedraw();
-                }
-            }
-        }
+        //if (@event is InputEventMouse)
+        //{
+        //    Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
+        //    if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
+        //    {
+        //        if (lic == hoveringCell) return;
+        //        else
+        //        {
+        //            potentialMoves.Clear();
+        //            hoveringCell = lic;
+        //            if (board.tileIsOccupied(lic) && machine.oneHiveRuleCheck(lic))
+        //            {
+        //                Piece piece = board.piecesInPlay[lic];
+        //                //FIXME
+        //                //potentialMoves = Piece.getLegalMoves(piece, board);
+        //            }
+        //            QueueRedraw();
+        //        }
+        //    }
+        //}
     }
     public override void _Draw()
     {
