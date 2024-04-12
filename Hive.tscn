@@ -17,14 +17,13 @@
 
 [node name="TatiHex" parent="." instance=ExtResource("1_2md7f")]
 position = Vector2(284, 53)
+ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
 Hexsize = 80
 Rows = 13
 Cols = 13
 orientation = 0
-ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
 
-[node name="Hover" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("3_ra64y")]
-grid = NodePath("../TatiHex")
+[node name="Hover" parent="." instance=ExtResource("3_ra64y")]
 
 [node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board", "machine")]
 script = ExtResource("3_p4sjr")
@@ -35,17 +34,11 @@ machine = NodePath("../Game/Machine")
 
 [node name="Game" type="Node" parent="."]
 
-[node name="BoardNode" type="Node2D" parent="Game" node_paths=PackedStringArray("grid")]
+[node name="BoardNode" type="Node2D" parent="Game"]
 script = ExtResource("2_5gm5w")
-grid = NodePath("../../TatiHex")
 
-[node name="Machine" type="Node" parent="Game" node_paths=PackedStringArray("board", "statusLabel", "playlable", "moveMaker", "debugButtons")]
+[node name="Machine" type="Node" parent="Game"]
 script = ExtResource("5_1ousa")
-board = NodePath("../BoardNode")
-statusLabel = NodePath("statusLable")
-playlable = NodePath("playerLable")
-moveMaker = NodePath("InternalMoveMaker")
-debugButtons = NodePath("../../Pieces")
 
 [node name="playerLable" type="Label" parent="Game/Machine"]
 offset_left = 1.0
@@ -91,23 +84,19 @@ offset_top = 118.0
 offset_right = 42.0
 offset_bottom = 141.0
 
-[node name="gridMoveListener" type="Node2D" parent="Game/Machine/InternalMoveMaker" node_paths=PackedStringArray("grid", "board")]
+[node name="gridMoveListener" type="Node2D" parent="Game/Machine/InternalMoveMaker"]
 script = ExtResource("7_gty7b")
-grid = NodePath("../../../../TatiHex")
-board = NodePath("../../../BoardNode")
 
 [node name="MoveSender" parent="." instance=ExtResource("7_soia2")]
 
 [node name="TODO_ INVENTORY,TERMINAL, MOVEHISTORY" type="Node" parent="."]
 
-[node name="Pieces" type="VFlowContainer" parent="." node_paths=PackedStringArray("inventory", "moveMaker")]
+[node name="Pieces" type="VFlowContainer" parent="."]
 offset_left = 1271.0
 offset_top = 3.0
 offset_right = 1609.0
 offset_bottom = 158.0
 script = ExtResource("10_hc76x")
-inventory = NodePath("../Game/BoardNode")
-moveMaker = NodePath("../Game/Machine/InternalMoveMaker")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 offset_left = 1458.0
