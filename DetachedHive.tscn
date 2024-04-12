@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bu6fc226yuaj7"]
+[gd_scene load_steps=6 format=3 uid="uid://bu6fc226yuaj7"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
 [ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="4_uf6w0"]
+[ext_resource type="Script" path="res://HoverHex.cs" id="5_vkuig"]
 [ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
 
 [node name="GameWrapper" type="Node2D"]
@@ -79,3 +80,8 @@ position = Vector2(-284, -53)
 script = ExtResource("5_x0qel")
 parent = NodePath("../..")
 drawnGrid = NodePath("..")
+
+[node name="HoverHex" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("gameWrapper", "_hexgrid")]
+script = ExtResource("5_vkuig")
+gameWrapper = NodePath("../..")
+_hexgrid = NodePath("..")
