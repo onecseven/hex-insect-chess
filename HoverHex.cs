@@ -38,16 +38,11 @@ public partial class HoverHex : Node2D
 
         if (@event is InputEventMouse)
         {
-            Vector2 currentPosition = ((InputEventMouse)@event).GlobalPosition - hexgrid.Position;
-            var lic = hexgrid.FindCell(new Vector2(currentPosition.X, currentPosition.Y));
-            if (lic != null)
+            var lic = hexgrid.mouseToCell((InputEventMouse)@event);
+            if (lic != hoveringCell)
             {
-                if (lic == hoveringCell) return;
-                else
-                {
-                    hoveringCell = (Cell)lic;
-                    QueueRedraw();
-                }
+                hoveringCell = lic;
+                QueueRedraw();
             }
         }
     }
