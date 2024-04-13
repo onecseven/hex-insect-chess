@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public partial class TatiHex : Node2D
 {
+    public readonly Cell nullCell = new Cell(-12, -12, -12);
+
     Sylves.HexGrid grid
     {
         get
@@ -102,6 +104,14 @@ public partial class TatiHex : Node2D
                 DrawLine(super_shapes[i], super_shapes[next], ColorBase, 1);
             }
         }
+    }
+
+    public Cell mouseToCell(InputEventMouse ev)
+    {
+        Vector2 currentPosition = ((InputEventMouse)ev).GlobalPosition - this.Position;
+        var lic = FindCell(new Vector2(currentPosition.X, currentPosition.Y));
+        if (lic != null) return (Cell)lic; 
+        else return nullCell;
     }
 
     public Cell? FindCell(Vector2 loc)
