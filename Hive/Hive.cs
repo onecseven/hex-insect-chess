@@ -206,6 +206,7 @@ namespace Hive
         private void move(MOVE_PIECE move)
         {
             GD.Print("\n" + move.player + " MOVING " + move.piece + " FROM " + move.origin + " TO " + move.destination);
+            GD.Print("\n=====");
             Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
             if (board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied)
             {

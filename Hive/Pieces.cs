@@ -26,12 +26,12 @@ namespace Hive
         public  Texture2D texture { get {
                 return _textures[this.type];
             } }
-        public Piece(Pieces t, Players o, Cell l, int id)
+        public Piece(Pieces t, Players o, Cell l, int i)
         {
             type = t;
             owner = o;
             location = l;
-            id = id;
+            id = i;
         }
         public static Piece create(Pieces piece, Players player, Cell destination, int id)
         {
