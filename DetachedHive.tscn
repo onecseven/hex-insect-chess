@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bu6fc226yuaj7"]
+[gd_scene load_steps=9 format=3 uid="uid://bu6fc226yuaj7"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
 [ext_resource type="Script" path="res://PotentialMoves.cs" id="6_8very"]
 [ext_resource type="Script" path="res://History.cs" id="7_6lahk"]
+
+[sub_resource type="FontVariation" id="FontVariation_1t63a"]
 
 [node name="GameWrapper" type="Node2D"]
 script = ExtResource("1_34qvu")
@@ -81,6 +83,7 @@ orientation = 0
 [node name="PiecePainter" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("parent", "drawnGrid")]
 position = Vector2(-284, -53)
 script = ExtResource("5_x0qel")
+font = SubResource("FontVariation_1t63a")
 parent = NodePath("../..")
 drawnGrid = NodePath("..")
 
