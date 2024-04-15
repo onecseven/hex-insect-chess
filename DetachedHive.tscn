@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://bu6fc226yuaj7"]
+[gd_scene load_steps=8 format=3 uid="uid://bu6fc226yuaj7"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
 [ext_resource type="PackedScene" uid="uid://d3rc8wnxfmlhk" path="res://tati_hex.tscn" id="4_uf6w0"]
 [ext_resource type="Script" path="res://HoverHex.cs" id="5_vkuig"]
 [ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
+[ext_resource type="Script" path="res://PotentialMoves.cs" id="6_8very"]
+[ext_resource type="Script" path="res://History.cs" id="7_6lahk"]
 
 [node name="GameWrapper" type="Node2D"]
 script = ExtResource("1_34qvu")
@@ -70,6 +72,7 @@ position = Vector2(284, 53)
 gameWrapper = NodePath("..")
 defaultFontSize = 14
 ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
+DrawGrid = false
 Hexsize = 80
 Rows = 13
 Cols = 13
@@ -81,7 +84,21 @@ script = ExtResource("5_x0qel")
 parent = NodePath("../..")
 drawnGrid = NodePath("..")
 
-[node name="HoverHex" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("gameWrapper", "_hexgrid")]
-script = ExtResource("5_vkuig")
+[node name="PotentialMoves" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("gameWrapper", "grid")]
+script = ExtResource("6_8very")
 gameWrapper = NodePath("../..")
+grid = NodePath("..")
+ColorBase = Color(1, 0, 0.0745098, 1)
+
+[node name="HoverHex" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("_hexgrid")]
+script = ExtResource("5_vkuig")
 _hexgrid = NodePath("..")
+
+[node name="History" type="ScrollContainer" parent="."]
+offset_left = 1250.0
+offset_right = 1392.0
+offset_bottom = 887.0
+script = ExtResource("7_6lahk")
+
+[node name="HFlowContainer" type="HFlowContainer" parent="History"]
+layout_mode = 2

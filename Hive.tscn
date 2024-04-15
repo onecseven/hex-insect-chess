@@ -25,12 +25,10 @@ orientation = 0
 
 [node name="Hover" parent="." instance=ExtResource("3_ra64y")]
 
-[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid", "board", "machine")]
+[node name="PotentialMoves" type="Node2D" parent="." node_paths=PackedStringArray("grid")]
 script = ExtResource("3_p4sjr")
 grid = NodePath("../TatiHex")
-board = NodePath("../Game/BoardNode")
 ColorBase = Color(1, 0, 0.0745098, 1)
-machine = NodePath("../Game/Machine")
 
 [node name="Game" type="Node" parent="."]
 
