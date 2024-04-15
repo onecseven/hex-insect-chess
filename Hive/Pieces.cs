@@ -13,6 +13,7 @@ namespace Hive
         public Pieces type;
         public Players owner;
         public Cell location;
+        public int id;
         public static Godot.Collections.Dictionary<Pieces, Texture2D> _textures = new Godot.Collections.Dictionary<Pieces, Texture2D>() {
                 [Pieces.ANT] = GD.Load<Texture2D>("res://assets/ant.png"),
                 [Pieces.BEE] = GD.Load<Texture2D>("res://assets/bee.png"),
@@ -25,28 +26,29 @@ namespace Hive
         public  Texture2D texture { get {
                 return _textures[this.type];
             } }
-        public Piece(Pieces t, Players o, Cell l)
+        public Piece(Pieces t, Players o, Cell l, int id)
         {
             type = t;
             owner = o;
             location = l;
+            id = id;
         }
-        public static Piece create(Pieces piece, Players player, Cell destination)
+        public static Piece create(Pieces piece, Players player, Cell destination, int id)
         {
             switch (piece)
             {
                 case Pieces.BEE:
                     return new Bee(player, destination);   
                 case Pieces.ANT:
-                    return new Ant(player, destination);    
+                    return new Ant(player, destination, id);    
                 case Pieces.SPIDER:
-                    return new Spider(player, destination);
+                    return new Spider(player, destination, id);
                 case Pieces.GRASSHOPPER:
-                    return new Grasshopper(player, destination);    
+                    return new Grasshopper(player, destination, id);    
                 case Pieces.MOSQUITO:
                     return new Mosquito(player, destination); 
                 case Pieces.BEETLE:
-                    return new Beetle(player, destination);
+                    return new Beetle(player, destination, id);
                 case Pieces.LADYBUG:
                     return new Ladybug(player, destination);
                 default:
@@ -79,7 +81,7 @@ namespace Hive
     }
     public class Bee : Piece
     {
-        public Bee(Players p, Cell l) : base(Pieces.BEE, p, l) { }
+        public Bee(Players p, Cell l) : base(Pieces.BEE, p, l, 0) { }
         public static List<Path> _getLegalMoves(Board board, Cell origin) => board.adjacentLegalCells(origin).Select(cell => new Path(cell, Pieces.BEE)).ToList();
     }
     public class Mosquito : Piece
@@ -94,13 +96,13 @@ namespace Hive
             {
                 Pieces current_type = board.piecesInPlay[occupied].activePiece.type;
                 if (current_type == Pieces.MOSQUITO) continue;
-                List<Path> convertedMoves = Piece.getLegalMoves(new Piece(current_type, originalPiece.owner, origin), board);
+                List<Path> convertedMoves = Piece.getLegalMoves(new Piece(current_type, originalPiece.owner, origin, -1), board);
                 result.AddRange(convertedMoves);
             }
             return result;
         }
 
-        public Mosquito(Players p, Cell l) : base(Pieces.MOSQUITO, p, l) { }
+        public Mosquito(Players p, Cell l) : base(Pieces.MOSQUITO, p, l, 0) { }
     }
     public class Ladybug : Piece
     {
@@ -122,7 +124,7 @@ namespace Hive
             }
             return paths;
         }
-        public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l) { }
+        public Ladybug(Players p, Cell l) : base(Pieces.LADYBUG, p, l, 0) { }
     }
     public class Beetle : Piece
     {
@@ -134,7 +136,7 @@ namespace Hive
             result.AddRange(board.getOccupiedNeighbors(origin));
             return result.ConvertAll<Path>(cell => new Path(cell, Pieces.BEE));
         }
-        public Beetle(Players p, Cell l) : base(Pieces.BEETLE, p, l) { }  
+        public Beetle(Players p, Cell l, int id) : base(Pieces.BEETLE, p, l, id) { }  
     }
     public class Spider : Piece
     {
@@ -158,7 +160,7 @@ namespace Hive
             }
             return paths;
         }
-        public Spider(Players p, Cell l) : base(Pieces.SPIDER, p, l) { }
+        public Spider(Players p, Cell l, int id) : base(Pieces.SPIDER, p, l, id) { }
     }
     public class Grasshopper : Piece
     {
@@ -194,7 +196,7 @@ namespace Hive
             }
             return result;
         }
-        public Grasshopper(Players p, Cell l) : base(Pieces.GRASSHOPPER, p, l) { }
+        public Grasshopper(Players p, Cell l, int id) : base(Pieces.GRASSHOPPER, p, l, id) { }
     }
     public class Ant : Piece
     {
@@ -212,6 +214,7 @@ namespace Hive
         }
 
         //FIX WAIT WHO IS USING THIS?
+        //no one it's recursive
         public static List<Path> findViablePath(Board board, Cell origin, Cell dest, List<Cell> excluded)
         {
             List<Path> result = new List<Path>();
@@ -234,6 +237,6 @@ namespace Hive
         {
             return findAll(board, origin, new HashSet<Cell>()).ToList().Select(x => new Path(x, Pieces.ANT)).ToList();
         }
-        public Ant(Players p, Cell l) : base(Pieces.ANT, p, l) { }
+        public Ant(Players p, Cell l, int id) : base(Pieces.ANT, p, l, id) { }
     }
 }

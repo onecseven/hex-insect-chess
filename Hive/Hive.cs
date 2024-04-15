@@ -11,15 +11,26 @@ namespace Hive
 
     public class Player
     {
+        private readonly Dictionary<Pieces, int> reference = new Dictionary<Pieces, int>()
+        {
+            [Pieces.BEE] = 1,
+            [Pieces.MOSQUITO] = 1,
+            [Pieces.LADYBUG] = 1,
+            [Pieces.SPIDER] = 2,
+            [Pieces.BEETLE] = 2,
+            [Pieces.ANT] = 3,
+            [Pieces.GRASSHOPPER] = 3
+
+        };
         public Dictionary<Pieces, int> inventory = new Dictionary<Pieces, int>()
         {
             [Pieces.BEE] = 1,
-            [Pieces.ANT] = 3,
+            [Pieces.MOSQUITO] = 1,
+            [Pieces.LADYBUG] = 1,
             [Pieces.SPIDER] = 2,
             [Pieces.BEETLE] = 2,
-            [Pieces.GRASSHOPPER] = 3,
-            [Pieces.MOSQUITO] = 1,
-            [Pieces.LADYBUG] = 1
+            [Pieces.ANT] = 3,
+            [Pieces.GRASSHOPPER] = 3
 
         };
         public Players color;
@@ -29,10 +40,11 @@ namespace Hive
             color = _color;
         }
 
-        public void piecePlaced(Pieces _piece)
+        public int piecePlaced(Pieces _piece)
         {
             if (hasPiece(_piece)) inventory[_piece]--;
             else throw new ArgumentOutOfRangeException("piece placed called when player is out of pieces");
+            return reference[_piece] - inventory[_piece];
         }
         public bool hasPiece(Pieces _piece) => inventory.ContainsKey(_piece) && inventory[_piece] > 0;
 
@@ -141,7 +153,6 @@ namespace Hive
         {
         }
 
-
         public void send_move(Move move)
         {
             GD.Print("\nMOVE RECEIVED");
@@ -165,6 +176,7 @@ namespace Hive
                     break;
             }
             moves.Add(move);
+            NotationReader.moveListToNotation(moves);
             onSuccessfulMove(move);
             if (wincon_check()) game_over();
             else advanceTurn();
@@ -187,8 +199,8 @@ namespace Hive
             GD.Print("\n" + move.player + " PLACING " + move.piece + " ON " + move.destination);
             GD.Print("\n=====");
             Player pieceOwner = players[move.player];
-            Piece newPiece = Piece.create(move.piece, move.player, (move.destination));
-            pieceOwner.piecePlaced(newPiece.type);
+            var id = pieceOwner.piecePlaced(move.piece);
+            Piece newPiece = Piece.create(move.piece, move.player, (move.destination), id);
             board.placePiece(newPiece);
         }
         private void move(MOVE_PIECE move)
@@ -197,7 +209,7 @@ namespace Hive
             Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
             if (board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied)
             {
-                Piece newPiece = Piece.create(originalPiece.type, originalPiece.owner, move.destination);
+                Piece newPiece = Piece.create(originalPiece.type, originalPiece.owner, move.destination, originalPiece.id);
                 board.movePiece(move.origin,newPiece);
             }
         }
