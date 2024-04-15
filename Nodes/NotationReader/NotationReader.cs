@@ -358,14 +358,15 @@ public class NotationReader
 
         string moveToNotation(MOVE_PIECE move)
         {
+            string subj = map[move.origin][0];
             if (map[move.origin].Count > 1)
             {
                 map[move.origin].RemoveAt(0);
-            }else
+            }
+            else
             {
                 map.Remove(move.origin);
             }
-            string subj = Sujeto(move.piece, move.player);
             string prelim = $"{subj} {Objeto(move.destination)}";
             if (map.ContainsKey(move.destination))
             {
@@ -395,7 +396,7 @@ public class NotationReader
             }
         }
 
-        HiveUtils.Unroll("notation", converted);
+        GD.Print(converted.Count + ". " + converted.Last());
         return converted.ToString();   
     }
 }
