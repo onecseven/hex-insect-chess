@@ -176,7 +176,6 @@ namespace Hive
                     break;
             }
             moves.Add(move);
-<<<<<<< HEAD
             NotationReader.moveListToNotation(moves);
             onSuccessfulMove?.Invoke(move);
             if (wincon_check()) game_over();
