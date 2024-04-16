@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bu6fc226yuaj7"]
+[gd_scene load_steps=9 format=3 uid="uid://drarx81vcq1h8"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
@@ -74,7 +74,6 @@ position = Vector2(284, 53)
 gameWrapper = NodePath("..")
 defaultFontSize = 14
 ColorBase = Color(0.341176, 0.52549, 0.870588, 1)
-DrawGrid = false
 Hexsize = 80
 Rows = 13
 Cols = 13

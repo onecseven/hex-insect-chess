@@ -177,7 +177,7 @@ namespace Hive
             }
             moves.Add(move);
             NotationReader.moveListToNotation(moves);
-            onSuccessfulMove(move);
+            onSuccessfulMove?.Invoke(move);
             if (wincon_check()) game_over();
             else advanceTurn();
         }
@@ -208,11 +208,12 @@ namespace Hive
             GD.Print("\n" + move.player + " MOVING " + move.piece + " FROM " + move.origin + " TO " + move.destination);
             GD.Print("\n=====");
             Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
-            if (board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied)
+            if ((board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied) ||
+                (board.piecesInPlay[move.destination].isOccupied && move.piece == Pieces.BEETLE))
             {
                 Piece newPiece = Piece.create(originalPiece.type, originalPiece.owner, move.destination, originalPiece.id);
                 board.movePiece(move.origin,newPiece);
-            }
+            } 
         }
         private void initialPlace(INITIAL_PLACE move) => place(new PLACE(move.player, move.piece, move.destination));
         #region rule checkers

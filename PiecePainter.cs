@@ -20,7 +20,7 @@ public partial class PiecePainter : Node2D
         get => _parent; set
         {
             _parent = value;
-            _parent.machine.onSuccessfulMove += onSuccessfulMoveHandler;
+            _parent.onOuterSuccessfulMove += onSuccessfulMoveHandler;
         }
     }
 
