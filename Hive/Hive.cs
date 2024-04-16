@@ -192,7 +192,7 @@ namespace Hive
         private void game_over()
         {
             game_status = Phases.GAME_OVER;
-            onGameOver();
+            onGameOver?.Invoke();
         }
         private void place(PLACE move)
         {
