@@ -104,6 +104,7 @@ namespace Hive
             else throw new Exception("connectingAdjacents fucked up somewhere!");
         }
 
+        //FIXME: this needs to be rewritten because it doesn't account for movement above the hive
         public bool CanMoveBetween(Cell a, Cell b) => !connectingAdjacents(a, b).All(cell => tileIsOccupied(cell));
 
     }
