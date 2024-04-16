@@ -14,7 +14,9 @@ namespace Hive
         {
             if (move.player != turn || (mustPlayBee(move.player) && (move.piece != Pieces.BEE)))
             {
-                GD.PrintErr("Must Play Bee or wrong player.");
+                //GD.Print((move.piece != Pieces.BEE));
+                //GD.Print(mustPlayBee(move.player));
+                //GD.PrintErr("Must Play Bee or wrong player.");
                 return false;
             }
             switch (move.type)
@@ -40,7 +42,7 @@ namespace Hive
         bool moveIsLegal(MOVE_PIECE move)
         {
             // check that the piece is in play
-            if (!board.piecesInPlay[move.origin].isOccupied || board.piecesInPlay[move.origin].activePiece.owner != move.player) return false;
+            if ((!board.piecesInPlay[move.origin].isOccupied && move.piece != Pieces.BEETLE) || board.piecesInPlay[move.origin].activePiece.owner != move.player) return false;
             Piece piece = board.piecesInPlay[move.origin].activePiece;
             List<Path> paths = Piece.getLegalMoves(piece, board);
             Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
@@ -80,11 +82,7 @@ namespace Hive
         bool placementLegalityCheck(Cell destination, Players player, Pieces piece)
         {
             bool checkIfPlayerHasPieceInInventory(Players player, Pieces piece) => players[player].hasPiece(piece);
-            //TODO send getOccupied neighbors to hexutils or maybe even a dedicated board class
             List<Sylves.Cell> surroundingPieces = board.getOccupiedNeighbors(destination);
-
-            //pieces in play -> board[Cell]
-
             List<Piece> actualPieces = surroundingPieces.Select(cel => board.piecesInPlay[cel].activePiece).ToList();
             bool piecesBelongToMover = actualPieces.All(pieces => player == pieces.owner);
             bool playerHasPieceInHand = checkIfPlayerHasPieceInInventory(player, piece);
@@ -111,7 +109,7 @@ namespace Hive
             bool hasPlayedThreeMoves = (moves.Where(move => move.player == player).ToList().Count) == 3;
             bool belowLimit = (moves.Where(move => move.player == player).ToList().Count) < 3;
             //GD.Print("hasPlayedBee ", hasPlayedBee);
-            //GD.Print("hasPlayedThreeMoves " + hasPlayedThreeMoves + " " + moves.Where(move => move.player == player).ToList().Count);
+            //GD.Print("hasPlayedThreeMoves " + hasPlayedThreeMoves + " has actually played: " + moves.Where(move => move.player == player).ToList().Count);
             if (hasPlayedThreeMoves && !hasPlayedBee) return true;
             else if (!belowLimit && !hasPlayedThreeMoves && !hasPlayedBee)
             {
