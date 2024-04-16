@@ -189,10 +189,14 @@ namespace Hive
             HashSet<Cell> hypoHive = new HashSet<Cell>();
             //br
             List<Cell> prelim = board.filteredPiecesInPlay;
-            prelim.Remove(movingPiece);
+            Tile tile = board.piecesInPlay[movingPiece];
+            if (!tile.hasBlockedPiece)
+            {
+                prelim.Remove(movingPiece);
+            }
             Cell first = prelim.First();
             int target = prelim.Count;
-            HashSet<Cell> computed = recursiveGetNeighbors(first, hypoHive, movingPiece);
+            HashSet<Cell> computed = recursiveGetNeighbors(first, hypoHive, tile.hasBlockedPiece ? null : movingPiece);
             if (computed.Count != target) return false;
             return true;
         }
