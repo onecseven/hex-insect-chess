@@ -50,6 +50,10 @@ namespace Hive
             if (endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
             else return false;
         }
+
+        //FIXME: we need this working so that we can stop
+        //pieces from going into door formations including beetles
+        //might just compare to getlegalmove tbh
         bool pathIsLegal(Path path, Pieces pieceType)
         {
             //TODO we can probably just check for normal moving piece types and then check that origin and end are not surrounded by door formations
@@ -62,7 +66,7 @@ namespace Hive
             //    case Pieces.BEETLE:
             //    foreach ((Cell first, Cell last) in path.pairs)
             //    {
-            //        if (!board.CanMoveBetween(first, last)) return false;
+            //if (!board.CanMoveBetween(first, last)) return false;
             //    }
             //    break;
             //    case Pieces.LADYBUG:
