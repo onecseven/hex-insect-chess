@@ -33,6 +33,7 @@ public class NotationReader
     public class Objet : Subject
     {
         public Sylves.FTHexCorner positionalMarker;
+        public bool onTop = false;
         override public string ToString() => $"positionalMarker: {positionalMarker}\nplayerMarker: {playerMarker}\npieceMarker: {pieceMarker}\nnumMarker: {numMarker}";
         public new string ToNotation()
         {
@@ -184,6 +185,9 @@ public class NotationReader
         } else if (positionalParticle.IsMatch(last))
         {
             objet.positionalMarker = parseDirection(false, last);
+        } else
+        {
+            objet.onTop = true;
         }
         return objet;
     }
@@ -245,7 +249,9 @@ public class NotationReader
             Objet objet = move.Item2;
             bool alreadyExists = pieceTracker.ContainsKey(subj.ToNotation());
             // Gotta use ((Subject)objet).ToNotation() because if we use the Objet version of ToNotation() we also add the positional marker
-            Cell dest = getCellFromDirection(pieceTracker[((Subject)objet).ToNotation()], objet.positionalMarker);
+            // objet.onTop marks that the notation has no positional marker and is therefore on top of the specified piece
+            // if it's true, we skip the call to getCellFromDirection
+            Cell dest = objet.onTop ? pieceTracker[((Subject)objet).ToNotation()] : getCellFromDirection(pieceTracker[((Subject)objet).ToNotation()], objet.positionalMarker);
             switch (alreadyExists)
             {
                 case true:
