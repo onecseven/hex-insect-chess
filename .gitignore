@@ -1,3 +1,4 @@
 # Godot 4+ specific ignores
 .godot/
 .vs/
+/.vs/HEX DEMO 3/v17/.suo
