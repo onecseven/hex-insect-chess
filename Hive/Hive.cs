@@ -179,9 +179,6 @@ namespace Hive
 <<<<<<< HEAD
             NotationReader.moveListToNotation(moves);
             onSuccessfulMove?.Invoke(move);
-=======
-            onSuccessfulMove(move);
->>>>>>> 4f71d70 (events instead of signals)
             if (wincon_check()) game_over();
             else advanceTurn();
         }
