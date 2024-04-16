@@ -62,9 +62,7 @@ public partial class TextEdit : Godot.TextEdit
 	{
 		if (NotationReader.IsValidMoveList(Text))
 		{
-			tokenized = NotationReader.Tokenize(Text);
-			var parsed = NotationReader.Parser(tokenized);
-			moves = NotationReader.Translator(parsed);
+			var moves = NotationReader.formattedListToMoves(Text);
 			int i = 1;
             foreach (var child in container.GetChildren())
             {

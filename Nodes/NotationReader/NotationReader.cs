@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using Hive;
 using System.Security.Cryptography.X509Certificates;
 using HexDemo3;
+using static System.Net.Mime.MediaTypeNames;
 
 public class NotationReader
 {
@@ -261,8 +262,12 @@ public class NotationReader
         }
         return processed;
     }
-    //TODO: translate movelist to notation
-    //public static string move
+
+    public static List<Hive.Move> formattedListToMoves(string moveList)
+    {
+        if (IsValidMoveList(moveList)) return Translator(Parser(Tokenize(moveList)));
+        throw new Exception("Invalid movelist.");
+    }
     public static string moveListToNotation(List<Move> moves)
     {
         Dictionary<Hive.Pieces, string> reversedPieceDict = pieceDict.ToDictionary(x => x.Value, x => x.Key);
