@@ -35,23 +35,23 @@ public partial class TextEdit : Godot.TextEdit
 	[Export]
 	GameWrapper gameWrapper = null;
 
-    // Called when the node enters the scene tree for the first time.
+	// Called when the node enters the scene tree for the first time.
 
-    public List<List<string>> tokenized = null;
+	public List<List<string>> tokenized = null;
 	public List<Move> moves = null;
 	public int lastMoveSent = -1;
 
 	public void sendNextMove()
 	{
-		if (moves == null || machine == null ||  lastMoveSent == (moves.Count - 1)) return;
+		if (moves == null || machine == null || lastMoveSent == (moves.Count - 1)) return;
 		machine.send_move(moves[lastMoveSent + 1]);
 		lastMoveSent++;
 	}
-    public override void _Ready()
+	public override void _Ready()
 	{
 		//machine.onSuccessfulMove += eventcheck;
 		_on_text_changed();
-    }
+	}
 
 	public void eventcheck(Move move)
 	{
@@ -62,25 +62,39 @@ public partial class TextEdit : Godot.TextEdit
 	{
 		if (NotationReader.IsValidMoveList(Text))
 		{
-			var moves = NotationReader.formattedListToMoves(Text);
+			moves = NotationReader.formattedListToMoves(Text);
+			gameWrapper.reset();
+			var tokenized = NotationReader.Tokenize(Text);
 			int i = 1;
-            foreach (var child in container.GetChildren())
-            {
-                RemoveChild(child);
-                child.QueueFree();
-            }
-            foreach (var token in tokenized)
-            {
-                var but = new Godot.Button();
+			foreach (var child in container.GetChildren())
+			{
+				//RemoveChild(child);
+				child.QueueFree();
+			}
+			foreach (var token in tokenized)
+			{
+				var but = new Godot.Button();
+				var curried = curry(i);
+				but.Pressed += () => curried();
 				but.Text = i + ". " + String.Join(" ", token);
 				but.Visible = true;
-                container.AddChild(but);
+				container.AddChild(but);
 				i++;
-            }
-        }
+			}
+		}
 	}
+	public Func<int> curry(int i) => () => {
+		var nenMoves = moves.GetRange(0, i);
+		lastMoveSent = i-1;
+		gameWrapper.restore(nenMoves);
+        return i; };
 
-	public void populate(List<Hive.Move> moves)
+    private void But_Pressed()
+    {
+		GD.Print("here");
+    }
+
+    public void populate(List<Hive.Move> moves)
 	{
 
 	}
