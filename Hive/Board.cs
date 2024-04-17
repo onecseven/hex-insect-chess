@@ -4,6 +4,7 @@ using Sylves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -102,6 +103,12 @@ namespace Hive
             List<Cell> union = aNeighbors.Intersect(bNeighbors).ToList();
             if (union.Count > 0 && union.Count == 2) return union;
             else throw new Exception("connectingAdjacents fucked up somewhere!");
+        }
+
+        public bool CanMoveAboveHive(Cell a, Cell b)
+        {
+            List<Cell> adjacents = connectingAdjacents(a, b);
+            return !adjacents.All(cell => tileIsOccupied(cell) && piecesInPlay[cell].hasBlockedPiece);
         }
 
         //FIXME: this needs to be rewritten because it doesn't account for movement above the hive

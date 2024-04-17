@@ -111,7 +111,7 @@ namespace Hive
                 else return null;
             }
         }
-        public int zindex => isOccupied ? pieces.Count - 1 : 0;
+        public int zIndex => isOccupied ? pieces.Count - 1 : 0;
         public bool hasBlockedPiece => pieces.Count > 1;
         public bool isOccupied => pieces.Count > 0;
         public Tile(Cell cell)
