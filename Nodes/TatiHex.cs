@@ -7,14 +7,6 @@ public partial class TatiHex : Node2D
 {
     public readonly Cell nullCell = new Cell(-12, -12, -12);
 
-    Sylves.HexGrid grid
-    {
-        get
-        {
-            return gameWrapper.machine.board.grid;
-        }
-    }
-
     [Export]
     GameWrapper gameWrapper = null;
     [Export]
@@ -66,7 +58,7 @@ public partial class TatiHex : Node2D
     }
     public bool isPointInCell(Vector2 point, Cell cell)
     {
-        Vector3 center = grid.GetCellCenter(cell);
+        Vector3 center = gameWrapper.machine.board.grid.GetCellCenter(cell);
         Vector2[][] triangles = HexUtils.SliceHexIntoTriangles(new Godot.Vector2(center.X, center.Y), _hexsize / 2, orientation);
         foreach (Vector2[] triangle in triangles)
         {
@@ -77,16 +69,16 @@ public partial class TatiHex : Node2D
     public Vector2[] GetHexCornersFromCenter(Vector2 center) => HexUtils.HexCornersFromCenter(center, _hexsize / 2, orientation);
     public Vector2[] GetHexCornersFromCenter(Vector3 center) => GetHexCornersFromCenter(new Vector2(center.X, center.Y));
 
-    Sylves.HexGrid inner_grid = new Sylves.HexGrid(25, HexOrientation.PointyTopped);
+    Sylves.HexGrid grid = new Sylves.HexGrid(25, HexOrientation.PointyTopped);
 
     public void updateGrid()
     {
-        inner_grid = new Sylves.HexGrid(_hexsize, orientation);
+        grid = new Sylves.HexGrid(_hexsize, orientation);
         var cells = HexUtils.HexGen(Rows, Cols, orientation);
         hexes.Clear();
         foreach (Cell cell in cells)
         {
-            hexes.TryAdd(cell, inner_grid.GetCellCenter(cell));
+            hexes.TryAdd(cell, grid.GetCellCenter(cell));
         }
         QueueRedraw();
     }
@@ -116,7 +108,7 @@ public partial class TatiHex : Node2D
 
     public Cell? FindCell(Vector2 loc)
     {
-        if (inner_grid.FindCell(new Vector3(loc.X, loc.Y, 0), out Cell lic))
+        if (grid.FindCell(new Vector3(loc.X, loc.Y, 0), out Cell lic))
         {
             return lic;
         } else
