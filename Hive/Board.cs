@@ -111,7 +111,6 @@ namespace Hive
             return !adjacents.All(cell => tileIsOccupied(cell) && piecesInPlay[cell].hasBlockedPiece);
         }
 
-        //FIXME: this needs to be rewritten because it doesn't account for movement above the hive
         public bool CanMoveBetween(Cell a, Cell b) => !connectingAdjacents(a, b).All(cell => tileIsOccupied(cell));
 
     }

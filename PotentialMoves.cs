@@ -7,8 +7,9 @@ using System.Linq;
 
 public partial class PotentialMoves : Node2D
 {
-	// Called when the node enters the scene tree for the first time.
-
+    // TODO add toggable bool "locked" so other nodes
+    // can show the player where the selected piece
+    // can move while in a 'selecting move state'
 	private Cell hoveringCell = new Cell(0,0);
     Hive.Board board
     {

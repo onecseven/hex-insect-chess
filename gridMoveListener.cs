@@ -5,38 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public partial class gridMoveListener : Node2D
+public partial class gridMoveListener : BaseHiveNode
 {
-	// Called when the node enters the scene tree for the first time.
+    // Called when the node enters the scene tree for the first time.
+ 
+    public delegate void TileClickedEventHandler(Tile tile);
+    public event TileClickedEventHandler TileClicked;
+    public override void _UnhandledInput(InputEvent @event)
+    {
 
-	//private Cell hoveringCell = new Cell(0,0);
-	//[Export]
-	//public TatiHex grid = null;
- //   [Export]
-	//public BoardNode board = null;
- //   //[Export]
- //   //public Color ColorBase { get; set; } = Colors.Yellow;
- //   //[Export]
- //   //public Machine machine = null;
- //   [Signal]
- //   public delegate void TileClickedEventHandler(Vector3 cell);
- //   [Signal]
- //   public delegate void BoardPieceClickedEventHandler(Vector3 origin, int pieceType);
- //   public override void _UnhandledInput(InputEvent @event)
- //   {
-
- //       if (@event is InputEventMouseButton && ((InputEventMouseButton)@event).Pressed)
- //       {
- //           Vector2 currentPosition = ((InputEventMouse)@event).Position - grid.Position;
- //           if (grid.grid.FindCell(new Vector3(currentPosition.X, currentPosition.Y, 0), out Cell lic))
- //           {
- //             if (!board.tileIsOccupied(lic)) {
- //               EmitSignal(nameof(TileClicked), new Vector3(lic.x, lic.y, lic.z));
- //             } else {
- //               var piece = board.piecesInPlay[lic];
- //               EmitSignal(nameof(BoardPieceClicked), new Vector3(piece.location.x, piece.location.y, piece.location.z), (int)piece.type);
- //             }
- //           }
- //       }
- //    }
+        if (@event is InputEventMouseButton && ((InputEventMouseButton)@event).Pressed)
+        {
+            Sylves.Cell currentPosition = grid.mouseToCell((InputEventMouse)@event);
+            Tile clickedTile = machine.board.piecesInPlay[currentPosition];
+            TileClicked?.Invoke(clickedTile);
+        }
+    }
 }
