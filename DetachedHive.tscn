@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://drarx81vcq1h8"]
+[gd_scene load_steps=11 format=3 uid="uid://drarx81vcq1h8"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
 [ext_resource type="Script" path="res://PotentialMoves.cs" id="6_8very"]
 [ext_resource type="Script" path="res://History.cs" id="7_6lahk"]
+[ext_resource type="Script" path="res://InternalMoveMaker.cs" id="8_oi3i5"]
+[ext_resource type="Script" path="res://gridMoveListener.cs" id="9_g2lkk"]
 
 [sub_resource type="FontVariation" id="FontVariation_1t63a"]
 
@@ -110,3 +112,17 @@ script = ExtResource("7_6lahk")
 
 [node name="HFlowContainer" type="HFlowContainer" parent="History"]
 layout_mode = 2
+
+[node name="InternalMoveMaker" type="Node" parent="."]
+script = ExtResource("8_oi3i5")
+
+[node name="gridMoveListener" type="Node2D" parent="." node_paths=PackedStringArray("grid", "gameWrapper")]
+script = ExtResource("9_g2lkk")
+grid = NodePath("../TatiHex")
+gameWrapper = NodePath("..")
+
+[node name="MoveTaker" type="TextEdit" parent="."]
+offset_left = 603.0
+offset_top = 834.0
+offset_right = 855.0
+offset_bottom = 867.0

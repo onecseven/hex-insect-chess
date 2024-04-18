@@ -5,8 +5,7 @@ using System;
 
 public partial class InternalMoveMaker : Node
 {
-    //find the current player
-    bool midMove = false;
+    //bool midMove = false;
     //int currentTurn = -1;
     //Hive.Players currentPlayer = Players.BLACK;
     //Label moveTypeLabel { get => GetChild<Label>(0); }
