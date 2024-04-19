@@ -1,5 +1,8 @@
 using Godot;
+using Hive;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class MoveComposer : BaseHiveNode
 {
@@ -10,23 +13,37 @@ public partial class MoveComposer : BaseHiveNode
 			_listener = value;
             _listener.TileClicked += TileClickedHandler;
 		} }
+	private bool isFirstClick = true;
+	private Hive.Tile savedPiece = null;
 
-    private void TileClickedHandler(Hive.Tile tile)
-    {
-		//	TODO handle clicked tiles
-		//  declate a variable to track if it's the first click
-		//	1. if it's the first click and the tile has a piece that's the subject
-		//	flip the flag, save the subject, send the subject up to move maker
-		//	2. if it's not the first click check then check if the new tile clicked
-		//  is within the pieces.GetLegalMoves output
-		//  2a. if it is, then send object to move maker
-		//	2b. if it isn't and it's a tile with a piece in it, then
-		//	do not flip the flag, replace the subject with the new subject (send up)
-		//  2c. if it isn't and it's an empty tile
-		//	flip the flag, replace the subject with nothing (send up)
-		//	1a if it is the first click but the tile is empty
-		//	do nothing
-        throw new NotImplementedException();
+	public delegate void ClearTextEventHandler();
+    public delegate void SubjectEventHandler(Tile tile);
+    public delegate void ObjectEventHandler(Tile tile, Tile neighbor);
+	public event SubjectEventHandler SubjectClicked;
+	public event ObjectEventHandler ObjectClicked;
+	public event ClearTextEventHandler ClearText;
+	private void TileClickedHandler(Hive.Tile tile)
+	{
+		if (isFirstClick && tile.isOccupied && tile.activePiece.owner == machine.turn)
+		{
+			isFirstClick = false;
+			savedPiece = tile;
+			SubjectClicked?.Invoke(tile);
+			return;
+		}
+		 else if (isFirstClick == false && savedPiece == tile)
+		{
+			isFirstClick = true;
+			savedPiece = null;
+			ClearText?.Invoke();
+			return;
+		} else if (isFirstClick == false && savedPiece != null)
+        {
+            ObjectClicked?.Invoke(tile, machine.board.getOccupiedNeighbors(tile.cell).Select(cell => machine.board.piecesInPlay[cell]).ToList()[0]);
+            isFirstClick = true;
+            savedPiece = null;
+			return;
+        }
     }
 
     public override void _Ready()
