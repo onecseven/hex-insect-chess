@@ -47,7 +47,7 @@ namespace Hive
             List<Path> paths = Piece.getLegalMoves(piece, board);
             Path playerPath = paths[paths.FindIndex(path => path.last == move.destination)];
             List<Sylves.Cell> endpoints = paths.Select(path => path.last).ToList();
-            if (endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type)) return true;
+            if (endpoints.Contains(move.destination) && pathIsLegal(playerPath, piece.type, move)) return true;
             else return false;
         }
 
@@ -55,7 +55,7 @@ namespace Hive
         //pieces from going into door formations including beetles
         //might just compare to getlegalmove tbh
         // add canMoveBetweenAbove 
-        bool pathIsLegal(Path path, Pieces pieceType)
+        bool pathIsLegal(Path path, Pieces pieceType, MOVE_PIECE move)
         {
             //TODO we can probably just check for normal moving piece types and then check that origin and end are not surrounded by door formations
             //we just check that the origin / end aren't surrounded by >= 5 pieces
@@ -80,10 +80,22 @@ namespace Hive
                     //FIXME pathIsLegal mosquito
                     case Pieces.MOSQUITO:
                         return true;
+                    //check if its z axis movement
+                    //single step path doesn't have pairs
                     case Pieces.BEETLE:
-                        foreach ((Cell first, Cell last) in path.pairs)
+                        var originTile = board.piecesInPlay[move.origin];
+                        var destTile = board.piecesInPlay[path.last];
+                        // horizontal movement above hive
+                        if ((originTile.zIndex - 1) == destTile.zIndex && originTile.zIndex > 0 )
                         {
-                            if (!board.CanMoveAboveHive(first, last)) return false;
+                            if (!board.CanMoveAboveHive(originTile.cell, destTile.cell)) return false;
+                        // horizontal movement on the floor
+                        } else if (!originTile.hasBlockedPiece && !destTile.isOccupied)
+                        {
+                            if (!board.CanMoveBetween(originTile.cell, destTile.cell)) return false;
+                        } else if (originTile.zIndex != destTile.zIndex)
+                        {
+                            return true;
                         }
                         break;
                 }
@@ -204,6 +216,7 @@ namespace Hive
             HashSet<Cell> hypoHive = new HashSet<Cell>();
             //br
             List<Cell> prelim = board.filteredPiecesInPlay;
+            //FIXME account for empty boards
             Tile tile = board.piecesInPlay[movingPiece];
             if (!tile.hasBlockedPiece)
             {
