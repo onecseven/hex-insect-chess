@@ -150,8 +150,9 @@ public partial class NotationReader
         }
         throw new Exception($"your move was bad: {move}");
     }
-    public static string moveListToNotation(List<Move> moves)
+    public static List<string> moveListToNotation(List<Move> moves)
     {
+        // references & building helpers
         Dictionary<Hive.Pieces, int> wInventory = new Dictionary<Pieces, int>()
         {
             [Hive.Pieces.ANT] = 3,
@@ -166,7 +167,6 @@ public partial class NotationReader
             [Hive.Pieces.BEETLE] = 2,
             [Hive.Pieces.GRASSHOPPER] = 3,
         };
-
         Dictionary<Hive.Players, Dictionary<Hive.Pieces, int>> inventories = new Dictionary<Players, Dictionary<Pieces, int>>()
         {
             [Players.BLACK] = bInventory,
@@ -174,7 +174,7 @@ public partial class NotationReader
         };
         Dictionary<Cell, List<string>> map = new Dictionary<Cell, List<string>>() { };
         List<string> converted = new List<string>();
-
+        // helper functions
         string Sujeto(Pieces piece, Players player) => $"{(player == Players.WHITE ? 'w' : 'b')}{reversedPieceDict[piece]}{(inventories[player].ContainsKey(piece) ? reference[piece] - inventories[player][piece] : "")}";
         string placeSubject(Pieces piece, Players player, Cell destination)
         {
@@ -233,7 +233,6 @@ public partial class NotationReader
 
         }
         string placeToNotation(PLACE move) => $"{placeSubject(move.piece, move.player, move.destination)} {Objeto(move.destination)}";
-
         string moveToNotation(MOVE_PIECE move)
         {
             string subj = map[move.origin][0];
@@ -260,6 +259,7 @@ public partial class NotationReader
             }
             return prelim;
         }
+        // main loop
         foreach (Move move in moves)
         {
             switch (move.type)
@@ -280,9 +280,7 @@ public partial class NotationReader
                     break;
             }
         }
-
-        GD.Print(converted.Count + ". " + converted.Last());
-        return converted.ToString();
+        return converted;
     }
 }
 

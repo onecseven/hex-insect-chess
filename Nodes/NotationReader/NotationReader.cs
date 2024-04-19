@@ -224,7 +224,7 @@ public partial class NotationReader
 
     public static List<Hive.Move> Translator(List<(Subject, Objet)> moves)
     {
-
+        if (moves.Count == 0)   return null;    
         //HashSet<string> seen = new HashSet<string>();
         //seen.Add(first.subject.ToNotation());
         //seen.Add(second.subject.ToNotation());
