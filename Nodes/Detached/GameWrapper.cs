@@ -9,9 +9,16 @@ public partial class GameWrapper : Node2D
 	public Hive.Hive machine { get => _machine; set {
 			_machine = value;
             _machine.onSuccessfulMove += outerOnSuccessfulMove;
+			_machine.onGameOver += () => GD.Print("game over!");
+            _machine.onFailedMove += _machine_onFailedMove;
 		} }
 
-	public event Hive.Hive.onSuccessfulMoveEventHandler onOuterSuccessfulMove;
+    private void _machine_onFailedMove(string error)
+    {
+		GD.PrintErr(error);
+    }
+
+    public event Hive.Hive.onSuccessfulMoveEventHandler onOuterSuccessfulMove;
     private void outerOnSuccessfulMove(Hive.Move move)
     {
 		onOuterSuccessfulMove(move);
