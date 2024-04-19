@@ -111,7 +111,7 @@ namespace Hive
                 else return null;
             }
         }
-        public int zIndex => isOccupied ? pieces.Count - 1 : 0;
+        public int zIndex => isOccupied ? pieces.Count : 0;
         public bool hasBlockedPiece => pieces.Count > 1;
         public bool isOccupied => pieces.Count > 0;
         public Tile(Cell cell)
@@ -158,6 +158,7 @@ namespace Hive
             GD.Print("\nMOVE RECEIVED");
             if (!moveIsValid(move) || game_status == Phases.GAME_OVER)
             {
+                GD.Print(move);
                 onFailedMove?.Invoke("Invalid Move");
                 return;
             }
@@ -176,7 +177,6 @@ namespace Hive
                     break;
             }
             moves.Add(move);
-            NotationReader.moveListToNotation(moves);
             onSuccessfulMove?.Invoke(move);
             if (wincon_check()) game_over();
             else advanceTurn();
