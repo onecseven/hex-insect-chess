@@ -10,8 +10,9 @@ using Hive;
 using System.Security.Cryptography.X509Certificates;
 using HexDemo3;
 using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
 
-public class NotationReader
+public partial class NotationReader
 {
     public class Subject
     {
@@ -71,7 +72,6 @@ public class NotationReader
         public new string ToNotation() => ".";
     }
 
-
     public static Dictionary<string, Hive.Pieces> pieceDict = new Dictionary<string, Hive.Pieces>() {
         ["S"] = Hive.Pieces.SPIDER,
         ["A"] = Hive.Pieces.ANT,
@@ -81,7 +81,6 @@ public class NotationReader
         ["L"] = Hive.Pieces.LADYBUG,
         ["G"] = Hive.Pieces.GRASSHOPPER,
     };
-
     #region regex
     public static Regex moveListPattern = new Regex(@"(([\/\\-])?([wb]{1}){1}([SAQBMLGP]{1})([123]{1})?([\/\\-])?|[\.])");
     public static Regex positionalParticle = new Regex(@"([\/\\-])");
@@ -136,6 +135,8 @@ public class NotationReader
         return tokenized;
     }
     #endregion
+
+    private static List<string> TokenizeMoveRaw(string move) => move.Split(" ").ToList<string>().Where(str => str.Count() > 0).ToList();
     private static List<string> TokenizeMove(string move)
     {
         var basicSplit = move.Split(":").ToList();
@@ -196,10 +197,11 @@ public class NotationReader
         var subject = new Subject() {
             numMarker = 0,
         };
+
         foreach (var token in subj)
         {
             if (playerMark.IsMatch(token.ToString())) { subject.playerMarker = token == 'w' ? Hive.Players.WHITE : Hive.Players.BLACK; }
-            if (pieceParticle.IsMatch(token.ToString())) { subject.pieceMarker = pieceDict[token.ToString()]; }
+            else if (pieceParticle.IsMatch(token.ToString())) { subject.pieceMarker = pieceDict[token.ToString().ToUpper()]; }
         }
         if (numberSpecifierParticle.IsMatch(subj))
         {
@@ -219,6 +221,7 @@ public class NotationReader
     {
         return new Cell(origin.x + HiveUtils.corners[dir].x, origin.y + HiveUtils.corners[dir].y, origin.z + HiveUtils.corners[dir].z);
     }
+
     public static List<Hive.Move> Translator(List<(Subject, Objet)> moves)
     {
 
@@ -274,140 +277,5 @@ public class NotationReader
         if (IsValidMoveList(moveList)) return Translator(Parser(Tokenize(moveList)));
         throw new Exception("Invalid movelist.");
     }
-    public static string moveListToNotation(List<Move> moves)
-    {
-        Dictionary<Hive.Pieces, string> reversedPieceDict = pieceDict.ToDictionary(x => x.Value, x => x.Key);
-        Dictionary<Hive.Pieces, int> wInventory = new Dictionary<Pieces, int>()
-        {
-            [Hive.Pieces.ANT] = 3,
-            [Hive.Pieces.SPIDER] = 2,
-            [Hive.Pieces.BEETLE] = 2,
-            [Hive.Pieces.GRASSHOPPER] = 3,
-        };
-        Dictionary<Hive.Pieces, int> bInventory = new Dictionary<Pieces, int>()
-        {
-            [Hive.Pieces.ANT] = 3,
-            [Hive.Pieces.SPIDER] = 2,
-            [Hive.Pieces.BEETLE] = 2,
-            [Hive.Pieces.GRASSHOPPER] = 3,
-        };
-        Dictionary<Pieces, int> reference = new Dictionary<Pieces, int>()
-        {
-            [Pieces.BEE] = 1,
-            [Pieces.MOSQUITO] = 1,
-            [Pieces.LADYBUG] = 1,
-            [Pieces.SPIDER] = 2,
-            [Pieces.BEETLE] = 2,
-            [Pieces.ANT] = 3,
-            [Pieces.GRASSHOPPER] = 3
-
-        };
-        Dictionary<Hive.Players, Dictionary<Hive.Pieces, int>> inventories = new Dictionary<Players, Dictionary<Pieces, int>>()
-        {
-            [Players.BLACK] = bInventory,
-            [Players.WHITE] = wInventory,
-        };
-        Dictionary<Cell, List<string>> map = new Dictionary<Cell, List<string>>() { };
-        List<string> converted = new List<string>();
-
-        string Sujeto(Pieces piece, Players player) => $"{(player == Players.WHITE ? 'w' : 'b')}{reversedPieceDict[piece]}{(inventories[player].ContainsKey(piece) ? reference[piece] - inventories[player][piece] : "")}";
-        string placeSubject(Pieces piece, Players player, Cell destination)
-        {
-            if (piece != Pieces.BEE && piece != Pieces.MOSQUITO && piece != Pieces.LADYBUG)
-            { 
-                inventories[player][piece]--;
-            }
-            string subject = Sujeto(piece, player);
-            map.Add(destination, new List<string>() { subject });
-            return subject;
-        }
-        string Objeto(Cell destination) {
-            foreach (FTHexCorner hexCorner in HiveUtils.corners.Keys){
-                Cell toCheck = getCellFromDirection(destination, hexCorner);
-                if (map.ContainsKey(toCheck))
-                {
-                    string prelim = map[toCheck][0];
-                    switch (hexCorner)
-                    {
-                        case FTHexCorner.Right:
-                            //it's to the left of the other guy
-                            return $"-{prelim}";
-                        case FTHexCorner.UpRight:
-                            //fixed
-                            return $"/{prelim}";
-                        case FTHexCorner.DownRight:
-                            //fixed
-                            return $"\\{prelim}";
-                        case FTHexCorner.Left:
-                            //fixed
-                            return $"{prelim}-";
-                        case FTHexCorner.DownLeft:
-                            //fixed
-                            return $"{prelim}/";
-                        case FTHexCorner.UpLeft:
-                            //fixed
-                            return $"{prelim}\\";
-                    }
-                }
-            }
-            throw new Exception("Couldn't find appropiate reference for the Objet part.");
-        }
-        string initialToNotation(INITIAL_PLACE move)
-        {
-            switch (move.player)
-            {
-                case Players.WHITE:
-                    return $"{placeSubject(move.piece, move.player, move.destination)} .";
-                case Players.BLACK:
-                    return $"{placeSubject(move.piece, move.player, move.destination)} {Objeto(move.destination)}";
-                default:
-                    throw new Exception("shut up type guy");
-            }
-
-        }
-        string placeToNotation(PLACE move) => $"{placeSubject(move.piece, move.player, move.destination)} {Objeto(move.destination)}";
-
-        string moveToNotation(MOVE_PIECE move)
-        {
-            string subj = map[move.origin][0];
-            if (map[move.origin].Count > 1)
-            {
-                map[move.origin].RemoveAt(0);
-            }
-            else
-            {
-                map.Remove(move.origin);
-            }
-            string prelim = $"{subj} {Objeto(move.destination)}";
-            if (map.ContainsKey(move.destination))
-            {
-                map[move.destination].Insert(0, subj); 
-            } else {
-                map.Add(move.destination, new List<string>() { subj });
-            }
-            return prelim;
-        }
-        foreach (Move move in moves) {
-            switch (move.type)
-            {
-                case MoveType.INITIAL_PLACE:
-                    converted.Add(initialToNotation((INITIAL_PLACE)move));
-                    break;
-                case MoveType.PLACE:
-                    converted.Add(placeToNotation((PLACE)move));
-                    break;
-                case MoveType.MOVE_PIECE:
-                    converted.Add(moveToNotation((MOVE_PIECE)move)); 
-                    break;
-                case MoveType.AUTOPASS:
-                    converted.Add("pass");
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        GD.Print(converted.Count + ". " + converted.Last());
-        return converted.ToString();   
-    }
+ 
 }
