@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://drarx81vcq1h8"]
+[gd_scene load_steps=12 format=3 uid="uid://drarx81vcq1h8"]
 
 [ext_resource type="Script" path="res://Nodes/Detached/GameWrapper.cs" id="1_34qvu"]
 [ext_resource type="PackedScene" uid="uid://dusfk5jo8406v" path="res://Nodes/NotationReader/Notation.tscn" id="3_dehar"]
@@ -7,70 +7,42 @@
 [ext_resource type="Script" path="res://PiecePainter.cs" id="5_x0qel"]
 [ext_resource type="Script" path="res://PotentialMoves.cs" id="6_8very"]
 [ext_resource type="Script" path="res://History.cs" id="7_6lahk"]
-[ext_resource type="Script" path="res://InternalMoveMaker.cs" id="8_oi3i5"]
 [ext_resource type="Script" path="res://gridMoveListener.cs" id="9_g2lkk"]
+[ext_resource type="Script" path="res://MoveComposer.cs" id="10_h2tns"]
+[ext_resource type="Script" path="res://MoveTaker.cs" id="11_piqe1"]
 
 [sub_resource type="FontVariation" id="FontVariation_1t63a"]
 
 [node name="GameWrapper" type="Node2D"]
 script = ExtResource("1_34qvu")
 
-[node name="notationReader" type="Node2D" parent="."]
+[node name="MoveListReader" type="Node2D" parent="."]
 
-[node name="ScrollContainer" type="ScrollContainer" parent="notationReader"]
+[node name="MoveListContainer" type="ScrollContainer" parent="MoveListReader"]
 offset_left = 1458.0
 offset_top = 12.0
 offset_right = 1600.0
 offset_bottom = 899.0
 
-[node name="HFlowContainer" type="HFlowContainer" parent="notationReader/ScrollContainer"]
+[node name="HFlowContainer" type="HFlowContainer" parent="MoveListReader/MoveListContainer"]
 layout_mode = 2
 
-[node name="TextEdit" parent="notationReader" node_paths=PackedStringArray("container", "nextButton", "gameWrapper") instance=ExtResource("3_dehar")]
+[node name="MoveListReceiver" parent="MoveListReader" node_paths=PackedStringArray("container", "nextButton", "gameWrapper") instance=ExtResource("3_dehar")]
 offset_left = 3.0
 offset_top = 315.0
 offset_right = 192.0
 offset_bottom = 701.0
 text = "URL: https://entomology.gitlab.io/hive.html?game=bsn:HV-Sphynterx-Dumbot-2010-12-11-0636
 
-1: wS1 .
-2: bL /wS1
-3: wA1 wS1-
-4: bQ bL\\
-5: wQ wS1/
-6: bB1 /bQ
-7: wA1 bQ-
-8: bB2 -bQ
-9: wB1 wA1/
-10: bS1 -bB1
-11: wB1 bL-
-12: bS2 -bB2
-13: wG1 wB1-
-14: bL wQ-
-15: wG1 bB1-
-16: bS2 -wS1
-17: wG1 bB2/
-18: bB1 bB2
-19: wB1 bQ
-20: bB1 bS1-
-21: wS2 wG1-
-22: bB2 -wG1
-23: wM wA1-
-24: bM /bB2
-25: wM bB1-
-26: bB1 /wM
-27: wB1 bM-
-28: bG1 bL/
-29: wG2 wM-
-30: bS2 wQ/
-31: wG2 bS1-
-"
+1: wQ .
+2: bQ wQ-
+3: wG1 \\wQ"
 placeholder_text = ""
-container = NodePath("../ScrollContainer/HFlowContainer")
+container = NodePath("../MoveListContainer/HFlowContainer")
 nextButton = NodePath("../NextButton")
 gameWrapper = NodePath("../..")
 
-[node name="NextButton" type="Button" parent="notationReader"]
+[node name="NextButton" type="Button" parent="MoveListReader"]
 offset_left = 36.0
 offset_top = 702.0
 offset_right = 152.0
@@ -100,29 +72,41 @@ gameWrapper = NodePath("../..")
 grid = NodePath("..")
 ColorBase = Color(1, 0, 0.0745098, 1)
 
+[node name="gridMoveListener" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("grid", "gameWrapper")]
+position = Vector2(-284, -53)
+script = ExtResource("9_g2lkk")
+grid = NodePath("..")
+gameWrapper = NodePath("../..")
+
 [node name="HoverHex" type="Node2D" parent="TatiHex" node_paths=PackedStringArray("_hexgrid")]
 script = ExtResource("5_vkuig")
 _hexgrid = NodePath("..")
 
-[node name="History" type="ScrollContainer" parent="."]
-offset_left = 1250.0
-offset_right = 1392.0
-offset_bottom = 887.0
+[node name="History" type="ScrollContainer" parent="." node_paths=PackedStringArray("grid", "gameWrapper", "historyButtonContainer", "moveListReceiver")]
+offset_left = 1311.0
+offset_top = 50.0
+offset_right = 1453.0
+offset_bottom = 900.0
 script = ExtResource("7_6lahk")
-
-[node name="HFlowContainer" type="HFlowContainer" parent="History"]
-layout_mode = 2
-
-[node name="InternalMoveMaker" type="Node" parent="."]
-script = ExtResource("8_oi3i5")
-
-[node name="gridMoveListener" type="Node2D" parent="." node_paths=PackedStringArray("grid", "gameWrapper")]
-script = ExtResource("9_g2lkk")
 grid = NodePath("../TatiHex")
 gameWrapper = NodePath("..")
+historyButtonContainer = NodePath("HistoryButtonContainer")
+moveListReceiver = NodePath("../MoveListReader/MoveListReceiver")
 
-[node name="MoveTaker" type="TextEdit" parent="."]
+[node name="HistoryButtonContainer" type="HFlowContainer" parent="History"]
+layout_mode = 2
+
+[node name="MoveTaker" type="TextEdit" parent="." node_paths=PackedStringArray("gameWrapper", "composer")]
 offset_left = 603.0
 offset_top = 834.0
 offset_right = 855.0
 offset_bottom = 867.0
+script = ExtResource("11_piqe1")
+gameWrapper = NodePath("..")
+composer = NodePath("MoveComposer")
+
+[node name="MoveComposer" type="Node2D" parent="MoveTaker" node_paths=PackedStringArray("listener", "grid", "gameWrapper")]
+script = ExtResource("10_h2tns")
+listener = NodePath("../../TatiHex/gridMoveListener")
+grid = NodePath("../../TatiHex")
+gameWrapper = NodePath("../..")
