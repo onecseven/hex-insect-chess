@@ -17,8 +17,11 @@ public partial class gridMoveListener : BaseHiveNode
         if (@event is InputEventMouseButton && ((InputEventMouseButton)@event).Pressed)
         {
             Sylves.Cell currentPosition = grid.mouseToCell((InputEventMouse)@event);
-            Tile clickedTile = machine.board.piecesInPlay[currentPosition];
-            TileClicked?.Invoke(clickedTile);
+             if (machine.board.piecesInPlay.ContainsKey(currentPosition))
+            {
+                Tile clickedTile = machine.board.piecesInPlay[currentPosition];
+                TileClicked?.Invoke(clickedTile);
+            }
         }
     }
 }
