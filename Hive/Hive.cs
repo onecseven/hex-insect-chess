@@ -135,6 +135,7 @@ namespace Hive
             [Players.BLACK] = new Player(Players.BLACK),
         };
         public Board board = new Board();
+        public Players? winner = null;
 
         //when the constructor is over
         public delegate void gameIsReadyEventHandler();
@@ -192,6 +193,16 @@ namespace Hive
         private void game_over()
         {
             game_status = Phases.GAME_OVER;
+            List<KeyValuePair<Cell, Tile>> bees = board.piecesInPlay.Where(kvp => kvp.Value.isOccupied && kvp.Value.pieces.Any(pie => pie.type == Pieces.BEE)).ToList();
+            if (bees.All(kvp => board.getOccupiedNeighbors(kvp.Key).Count == 6))
+            {
+                GD.Print("wtf a draw?");
+            }
+            else {
+                var color = bees.Where(kvp => board.getOccupiedNeighbors(kvp.Key).Count != 6).ToList();
+                GD.Print(color[0].Value.pieces.Find(piece => piece.type == Pieces.BEE)?.owner, " wins!");
+                winner = color[0].Value.pieces.Find(piece => piece.type == Pieces.BEE)?.owner;
+            }
             onGameOver?.Invoke();
         }
         private void place(PLACE move)
