@@ -51,10 +51,6 @@ namespace Hive
             else return false;
         }
 
-        //FIXME: we need this working so that we can stop
-        //pieces from going into door formations including beetles
-        //might just compare to getlegalmove tbh
-        // add canMoveBetweenAbove 
         bool pathIsLegal(Path path, Pieces pieceType, MOVE_PIECE move)
         {
             switch (pieceType)
@@ -62,6 +58,8 @@ namespace Hive
                     case Pieces.ANT:
                         return board.getOccupiedNeighbors(path.last).Count < 5;
                     case Pieces.SPIDER:
+                        //already checked in moveIsLegal by Piece.getLegalMoves()
+                        return true;
                     case Pieces.BEE:
                         foreach ((Cell first, Cell last) in path.pairs)
                         {
