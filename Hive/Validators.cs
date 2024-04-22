@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+//TODO make hive its own separate library
 namespace Hive
 {
     public partial class Hive
