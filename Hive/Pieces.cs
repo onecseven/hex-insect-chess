@@ -213,7 +213,6 @@ namespace Hive
             foreach(var p in adj)
             {
                 excluded.UnionWith(findAll(board, p, excluded));
-                break;  
             }
             return excluded;
         }
