@@ -57,31 +57,26 @@ namespace Hive
         // add canMoveBetweenAbove 
         bool pathIsLegal(Path path, Pieces pieceType, MOVE_PIECE move)
         {
-            //TODO we can probably just check for normal moving piece types and then check that origin and end are not surrounded by door formations
-            //we just check that the origin / end aren't surrounded by >= 5 pieces
             switch (pieceType)
                 {
-                    //FIXME something is going wrong with move15
-                    case Pieces.SPIDER:
-                    //FIXME pathIsLegal ant
                     case Pieces.ANT:
+                        return board.getOccupiedNeighbors(path.last).Count < 5;
+                    case Pieces.SPIDER:
                     case Pieces.BEE:
                         foreach ((Cell first, Cell last) in path.pairs)
                         {
-
-                        if (!board.CanMoveBetween(first, last)) return false;
+                            if (!board.CanMoveBetween(first, last)) return false;
                         }
                         break;
-                    //FIXME pathislegal ladybug
                     case Pieces.LADYBUG:
-                    //FIXME pathIsLegal grasshopepr
+                        if (path.isNullPath) return false;
+                        if (!board.CanMoveAboveHive(path.steps[0], path.steps[1])) return false;
+                        break;
                     case Pieces.GRASSHOPPER:
+                        //already checked in moveIsLegal
                         return true;
-                    //FIXME pathIsLegal mosquito
                     case Pieces.MOSQUITO:
-                        return true;
-                    //check if its z axis movement
-                    //single step path doesn't have pairs
+                        return pathIsLegal(path, path.pathType, move);
                     case Pieces.BEETLE:
                         var originTile = board.piecesInPlay[move.origin];
                         var destTile = board.piecesInPlay[path.last];
@@ -100,9 +95,6 @@ namespace Hive
                         break;
                 }
 
-            //giving up on checking if paths are legal
-            //if there's a bug with grasshoppers it's probably this
-            //if (pieceType == Pieces.GRASSHOPPER) return true;
             return true;
         }
         #endregion
