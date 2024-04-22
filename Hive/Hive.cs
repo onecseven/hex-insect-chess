@@ -220,11 +220,14 @@ namespace Hive
             GD.Print("\n=====");
             Piece originalPiece = board.piecesInPlay[move.origin].activePiece;
             if ((board.piecesInPlay[move.origin].isOccupied && !board.piecesInPlay[move.destination].isOccupied) ||
-                (board.piecesInPlay[move.destination].isOccupied && move.piece == Pieces.BEETLE))
+                (board.piecesInPlay[move.destination].isOccupied && (move.piece == Pieces.BEETLE || move.piece == Pieces.MOSQUITO)) 
+                )
             {
                 Piece newPiece = Piece.create(originalPiece.type, originalPiece.owner, move.destination, originalPiece.id);
                 board.movePiece(move.origin,newPiece);
-            } 
+            } else {
+                throw new Exception("Move passed checks but failed to play...?");
+            }
         }
         private void initialPlace(INITIAL_PLACE move) => place(new PLACE(move.player, move.piece, move.destination));
         #region rule checkers
