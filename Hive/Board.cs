@@ -3,7 +3,11 @@ using HexDemo3;
 using Sylves;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Hive
 {
@@ -60,10 +64,11 @@ namespace Hive
                 List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
                 neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
             }
-            var prelim = empty.Intersect(neighbor_adjacent).Where(next => CanMoveBetween(cell, next)).ToList();
+            var prelim = empty.Intersect(neighbor_adjacent).Where(next => hypotheticallCanMoveBetween(cell, next,  exclude )).ToList();
             return prelim.ToList();
         }
-        public List<Cell> hypotheticalAdjacentLegalCells(Cell cell, List<Cell> exclude)
+        //FIXME WONTFIX this is awful
+        public List<Cell> hypotheticalAdjacentLegalCellsForAnts(Cell cell, List<Cell> exclude)
         {
             List<Cell> empty = getEmptyNeighbors(cell);
             List<Cell> neighbors = getOccupiedNeighbors(cell);
@@ -77,7 +82,7 @@ namespace Hive
                 List<Cell> neighborAdjacentEmpties = getEmptyNeighbors(neighbor);
                 neighborAdjacentEmpties.ForEach(temp_tile => neighbor_adjacent.Add(temp_tile));
             }
-            var prelim = empty.Intersect(neighbor_adjacent).Where(next => hypotheticallCanMoveBetween(cell, next, exclude)).ToList();
+            var prelim = empty.Intersect(neighbor_adjacent).Where(next => hypotheticallCanMoveBetweenForAnts(cell, next, exclude)).ToList();
             return prelim.ToList();
         }
         //this is for the freedom to move rule right
@@ -110,14 +115,18 @@ namespace Hive
 
         public bool CanMoveBetween(Cell a, Cell b) => !connectingAdjacents(a, b).All(cell => tileIsOccupied(cell));
 
-        public bool hypotheticallCanMoveBetween(Cell a, Cell b, List<Cell> exclude)
+        public bool hypotheticallCanMoveBetween(Cell a, Cell b, Cell exclude)
         {
             List<Cell> adjacents = connectingAdjacents(a, b);
-            foreach (Cell toExclude in exclude)
-            {
-                adjacents.Remove(toExclude);
-            }
-            return adjacents.All(cell => tileIsOccupied(cell));
+            if (adjacents.Contains(exclude)) return true;
+            else return !adjacents.All(cell => tileIsOccupied(cell));
+        }
+
+        public bool hypotheticallCanMoveBetweenForAnts(Cell a, Cell b, List<Cell> exclude)
+        {
+            List<Cell> adjacents = connectingAdjacents(a, b);
+            if (adjacents.Intersect(exclude).Count() > 0) return true;
+            else return !adjacents.All(cell => tileIsOccupied(cell));
         }
 
     }
