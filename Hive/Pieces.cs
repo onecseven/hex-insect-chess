@@ -89,9 +89,14 @@ namespace Hive
         bool beetleMode = false;
         Piece blockedPiece = null;
         public static List<Path> _getLegalMoves(Board board, Cell origin) {
+
             List<Path> result = new List<Path>();
             Piece originalPiece = board.piecesInPlay[origin].activePiece;
             List<Cell> occupied_guys = board.getOccupiedNeighbors(origin);
+            if (originalPiece.type == Pieces.MOSQUITO && board.piecesInPlay[origin].hasBlockedPiece)
+            {
+                return Piece.getLegalMoves(new Piece(Pieces.BEETLE, originalPiece.owner, origin, -1), board);
+            }
             foreach (Cell occupied in occupied_guys)
             {
                 Pieces current_type = board.piecesInPlay[occupied].activePiece.type;
@@ -203,7 +208,7 @@ namespace Hive
         public static HashSet<Cell> findAll(Board board, Cell origin, HashSet<Cell> excluded)
         {
             excluded.Add(origin);
-            var adj = board.hypotheticalAdjacentLegalCells(origin, excluded.ToList()).Where(item => !excluded.Contains(item)); ;
+            var adj = board.hypotheticalAdjacentLegalCellsForAnts(origin, excluded.ToList()).Where(item => !excluded.Contains(item)); ;
             if (adj.All(item => excluded.Contains(item))) return excluded;
             foreach(var p in adj)
             {
@@ -215,23 +220,23 @@ namespace Hive
 
         //FIX WAIT WHO IS USING THIS?
         //no one it's recursive
-        public static List<Path> findViablePath(Board board, Cell origin, Cell dest, List<Cell> excluded)
-        {
-            List<Path> result = new List<Path>();
-            excluded.Add(origin);
-            List<Cell> nextSteps = board.hypotheticalAdjacentLegalCells(origin, excluded);
-            if (nextSteps.Contains(dest) && board.CanMoveBetween(origin, dest)) 
-            {
-                excluded.Add(dest);
-                result.Add(new Path(excluded, Pieces.ANT));
-                return result;
-            }
-            foreach (Cell step in nextSteps)
-            {
-                result.AddRange(findViablePath(board, step, dest, excluded));
-            }
-            return result;
-        }
+        //public static List<Path> findViablePath(Board board, Cell origin, Cell dest, List<Cell> excluded)
+        //{
+        //    List<Path> result = new List<Path>();
+        //    excluded.Add(origin);
+        //    List<Cell> nextSteps = board.hypotheticalAdjacentLegalCells(origin, excluded);
+        //    if (nextSteps.Contains(dest) && board.CanMoveBetween(origin, dest)) 
+        //    {
+        //        excluded.Add(dest);
+        //        result.Add(new Path(excluded, Pieces.ANT));
+        //        return result;
+        //    }
+        //    foreach (Cell step in nextSteps)
+        //    {
+        //        result.AddRange(findViablePath(board, step, dest, excluded));
+        //    }
+        //    return result;
+        //}
 
         public static List<Path> _getLegalMoves(Board board, Cell origin)
         {
